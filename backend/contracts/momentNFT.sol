@@ -33,14 +33,14 @@ contract momentNFT is ERC721URIStorage {
 
   function formatTokenURI(string memory _imageURI)public pure returns(string memory){
 
-    string memory baseURL = "data:application/json;base64";
+    string memory baseURL = "data:application/json;base64,";
     return string(abi.encodePacked(
       baseURL,
       Base64.encode(
         bytes(abi.encodePacked(
-          '{"name":"Moment NFT"',
-          '"description": "Fully on-chain clock NFT that shows you the current time"',
-          '"time-zone":""',
+          '{"name":"Moment NFT",',
+          '"description": "Fully on-chain clock NFT that shows you the current time",',
+          '"time-zone":"",',
           '"image":"',_imageURI,'"}')
         )
       )

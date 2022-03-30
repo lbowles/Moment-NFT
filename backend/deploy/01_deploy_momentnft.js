@@ -1,4 +1,7 @@
 const fs = require("fs")
+const {networkConfig} = require("../helper-hardhat-config.js")
+// const { ethers } = require("hardhat")
+// const { hrtime } = require("process")
 
 module.exports = async({
   getNamedAccounts,
@@ -10,14 +13,23 @@ module.exports = async({
   const chainId = await getChainId()
 
   log("[][][]][][][][][][][][][][][][][][]")
-  const momentNFT = await deploy("momentNFT", {
+  const MOMENTNFT = await deploy("momentNFT", {
     from: deployer,
     log: true 
   })
-  log('You have deployed the contract to ' +momentNFT.address )
+  log('You have deployed the contract to ' +MOMENTNFT.address )
   let file = "./img/clock.svg"
   let svg = fs.readFileSync(file, {encoding:"utf-8"})
 
   const momentNFTContract = await ethers.getContractFactory("momentNFT")
+  const accounts = await hre.ethers.getSigners()
+  const signer = accounts[0]
+  const momentSVG = new ethers.Contract(MOMENTNFT.address, momentNFTContract.interface, signer)
+  const networkName = networkConfig[chainId]['name']
+  log("Veryify with:  \n npx hardhat verify --network "+networkName+" "+momentSVG.address)
 
+  let tx = await momentSVG.create(svg)
+  let receipt = await tx.wait(1)
+  log("NFT Minted")
+  log("View tokenURI: "+ await momentSVG.tokenURI(0))
 }
