@@ -8,12 +8,15 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 contract momentNFT is ERC721 {
 
   uint public tokenCounter; 
-  uint constant SECONDS_PER_DAY = 24 * 60 * 60;
-  uint constant SECONDS_PER_HOUR = 60 * 60;
-  uint constant SECONDS_PER_MINUTE = 60;
+  uint32 constant SECONDS_PER_DAY = 24 * 60 * 60;
+  uint16 constant SECONDS_PER_HOUR = 60 * 60;
+  uint8 constant SECONDS_PER_MINUTE = 60;
   string public svgTop ;
   string public svgBot ; 
-  mapping (uint256 => uint8) public timeZone; 
+  
+  mapping (uint256 => int8) public timeZoneHour; 
+  mapping (uint256 => int8) public timeZoneMin; 
+
 
   event CreatedMomentNFT(uint256 indexed tokenId);
 
@@ -25,12 +28,14 @@ contract momentNFT is ERC721 {
 
   function create(string memory _svg) public {
     _safeMint(msg.sender, tokenCounter);
+    setTimeZone(0,30,tokenCounter) ; 
     emit CreatedMomentNFT(tokenCounter);
     tokenCounter = tokenCounter + 1 ; 
   }
 
-  function setTimeZone(uint8 _timeZone, uint tokenId) public {
-    timeZone[tokenId] = _timeZone ; 
+  function setTimeZone(int8 _timeZoneHour,int8 _timeZoneMin, uint tokenId) public{
+    timeZoneHour[tokenId] = _timeZoneHour ;
+    timeZoneMin[tokenId] = _timeZoneMin ;  
   }
 
   function svgToImageURI(string memory _svg) public pure returns (string memory){
@@ -40,22 +45,19 @@ contract momentNFT is ERC721 {
   }
 
   function tokenURI(uint256 id) public view override returns (string memory) {
-    uint hr = getHour(block.timestamp) ; 
-    uint  min = getMinute(block.timestamp);
-    uint  sec = getSecond(block.timestamp) ;
-    uint256  hrPosition = (hr * 360) / 12 + (min * (360 / 60)) / 12;
-    uint256  minPosition = (min * 360) / 60 + (sec * (360 / 60)) / 60;
-    string memory sHrPosition = Strings.toString(hrPosition); 
-    string memory sMinPosition = Strings.toString(minPosition); 
-
+    int hr = int(getHour(block.timestamp)) ; 
+    int min = int(getMinute(block.timestamp));
+    int sec = int(getSecond(block.timestamp)) ;
+    int hrPosition = ((hr+ timeZoneHour[id] + (timeZoneMin[id] /60)) * 360) / 12 + ((min+ timeZoneMin[id]) * (360 / 60)) / 12 ;
+    int minPosition = ((min +timeZoneMin[id]) * 360) / 60 + (sec * (360 / 60)) / 60;
+    string memory sHrPosition = Strings.toString(uint(hrPosition)) ; 
+    string memory sMinPosition = Strings.toString(uint(minPosition)) ; 
     string memory svgMid = string(abi.encodePacked(' <g id="minute" transform = "rotate(',sMinPosition,'  )">      <path class="minute-arm" d="M200 200V78" />      <circle class="sizing-box" cx="200" cy="200" r="130" />    </g>    <g id="hour" transform = "rotate(',sHrPosition,'  )">      <path class="hour-arm" d="M200 200V140" />      <circle class="sizing-box" cx="200" cy="200" r="130" />    </g>  '));
     string memory svg = string(abi.encodePacked(svgTop, svgMid, svgBot )) ; 
     string memory imageURI = svgToImageURI(svg) ;
     string memory json = base64(bytes(abi.encodePacked('{"name": "Moment NFT", "description": "Fully on-chain clock NFT that shows you the current time.", "image": "data:image/svg+xml;base64,',imageURI ,'"}')));
     return string(abi.encodePacked('data:application/json;base64,', json));
   }
-
-
 
   function getHour(uint timestamp) internal pure returns (uint hour) {
         uint secs = timestamp % SECONDS_PER_DAY;
