@@ -6,8 +6,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract momentNFT is ERC721 {
 
-  //TODO: Change Price 25 ether
-  uint256 public immutable claimPrice = 0.001 ether; 
+  uint256 public immutable claimPrice = 15 ether; 
   address public immutable withdrawAddress = 0x245E32DbA4E30b483F618A3940309236AaEbBbC5 ;
   uint public tokenCounter; 
   uint32 constant SECONDS_PER_DAY = 24 * 60 * 60;
@@ -101,10 +100,8 @@ contract momentNFT is ERC721 {
     uint256 len = data.length;
     if (len == 0) return "";
 
-    // multiply by 4/3 rounded up
     uint256 encodedLen = 4 * ((len + 2) / 3);
 
-    // Add some extra buffer at the end
     bytes memory result = new bytes(encodedLen + 32);
 
     bytes memory table = TABLE;
