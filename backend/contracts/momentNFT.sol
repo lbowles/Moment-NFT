@@ -2,35 +2,58 @@
 pragma solidity ^0.8.0;
 
 import "@rari-capital/solmate/src/tokens/ERC721.sol";
-import "base64-sol/base64.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract momentNFT is ERC721 {
 
+  //TODO: Change Price 25 ether
+  uint256 public immutable claimPrice = 0.001 ether; 
+  address public immutable withdrawAddress = 0x245E32DbA4E30b483F618A3940309236AaEbBbC5 ;
   uint public tokenCounter; 
   uint32 constant SECONDS_PER_DAY = 24 * 60 * 60;
   uint16 constant SECONDS_PER_HOUR = 60 * 60;
   uint8 constant SECONDS_PER_MINUTE = 60;
-  string public svgTop ;
-  string public svgBot ; 
+  string constant svgTop =' <svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">    <def>      <style>      .minute-arm {        fill: none;        stroke: #A3A3A3;        stroke-width: 6;        stroke-miterlimit: 8;      }      .hour-arm {        fill: none;        stroke: #fff;        stroke-width: 6;        stroke-miterlimit: 8;      }      #minute,#hour {        transform-origin: 200px 200px;      }    </style>    </def>    <rect width="400" height="400" fill="white" />    <circle cx="200" cy="200" r="147" stroke="black" stroke-width="6" />    <circle cx="200" cy="200" r="145" fill="black" stroke="#393939" stroke-width="2" />    <mask id="mask0_7_61" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="61" y="61" width="278" height="278">      <rect x="198" y="61" width="4" height="38" fill="#C4C4C4" />      <rect x="198" y="301" width="4" height="38" fill="#C4C4C4" />      <rect x="61" y="202" width="4" height="38" transform="rotate(-90 61 202)" fill="#C4C4C4" />      <rect x="301" y="202" width="4" height="38" transform="rotate(-90 301 202)" fill="#C4C4C4" />      <rect x="132.232" y="321.378" width="4" height="38" transform="rotate(-150 132.232 321.378)" fill="#C4C4C4" />      <rect x="252.232" y="113.531" width="4" height="38" transform="rotate(-150 252.232 113.531)" fill="#C4C4C4" />      <rect x="80.6224" y="271.232" width="4" height="38" transform="rotate(-120 80.6224 271.232)" fill="#C4C4C4" />      <rect x="288.469" y="151.232" width="4" height="38" transform="rotate(-120 288.469 151.232)" fill="#C4C4C4" />      <rect x="78.6224" y="132.232" width="4" height="38" transform="rotate(-60 78.6224 132.232)" fill="#C4C4C4" />      <rect x="286.469" y="252.232" width="4" height="38" transform="rotate(-60 286.469 252.232)" fill="#C4C4C4" />      <rect x="271.232" y="319.378" width="4" height="38" transform="rotate(150 271.232 319.378)" fill="#C4C4C4" />      <rect x="151.232" y="111.531" width="4" height="38" transform="rotate(150 151.232 111.531)" fill="#C4C4C4" />    </mask>    <g mask="url(#mask0_7_61)">      <mask id="mask1_7_61" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="45" y="41" width="324" height="316">        <rect x="45" y="41" width="324" height="316" fill="url(#paint0_linear_7_61)" />      </mask>      <g mask="url(#mask1_7_61)">        <rect x="13" y="9" width="387" height="359" fill="#F584FF" />        <g filter="url(#filter0_f_7_61)">          <circle cx="82.5" cy="117.5" r="117.5" fill="#FF84CE" />        </g>        <g filter="url(#filter1_f_7_61)">          <circle cx="349.5" cy="239.5" r="117.5" fill="#84A7FF" />        </g>        <g filter="url(#filter2_f_7_61)">          <circle cx="113.5" cy="345.5" r="117.5" fill="#E09191" />        </g>      </g>    </g> ';
+  string constant svgBot ='<circle cx="200" cy="200" r="5" fill="white" />    <defs>      <filter id="filter0_f_7_61" x="-135" y="-100" width="435" height="435" filterUnits="userSpaceOnUse"        color-interpolation-filters="sRGB">        <feFlood flood-opacity="0" result="BackgroundImageFix" />        <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />        <feGaussianBlur stdDeviation="50" result="effect1_foregroundBlur_7_61" />      </filter>      <filter id="filter1_f_7_61" x="132" y="22" width="435" height="435" filterUnits="userSpaceOnUse"        color-interpolation-filters="sRGB">        <feFlood flood-opacity="0" result="BackgroundImageFix" />        <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />        <feGaussianBlur stdDeviation="50" result="effect1_foregroundBlur_7_61" />      </filter>      <filter id="filter2_f_7_61" x="-104" y="128" width="435" height="435" filterUnits="userSpaceOnUse"        color-interpolation-filters="sRGB">        <feFlood flood-opacity="0" result="BackgroundImageFix" />        <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />        <feGaussianBlur stdDeviation="50" result="effect1_foregroundBlur_7_61" />      </filter>      <linearGradient id="paint0_linear_7_61" x1="207" y1="41" x2="207" y2="357" gradientUnits="userSpaceOnUse">        <stop stop-color="#FF84CE" />        <stop offset="1" stop-color="#923DFF" />      </linearGradient>    </defs>  </svg>'; 
   
+  mapping(address => bool) public claimed;
+  mapping(address => uint256) public userNFTTokenId;
+  mapping(uint256 => address) public ownerOfNFTId;
   mapping (uint256 => int8) public timeZoneHour; 
   mapping (uint256 => int8) public timeZoneMin; 
-
 
   event CreatedMomentNFT(uint256 indexed tokenId);
 
   constructor() ERC721 ("Moment NFT", "momentNFT") {
     tokenCounter = 0 ;
-    svgTop = ' <svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">    <def>      <style>      .minute-arm {        fill: none;        stroke: #A3A3A3;        stroke-width: 6;        stroke-miterlimit: 8;      }      .hour-arm {        fill: none;        stroke: #fff;        stroke-width: 6;        stroke-miterlimit: 8;      }      #minute,#hour {        transform-origin: 200px 200px;      }    </style>    </def>    <rect width="400" height="400" fill="white" />    <circle cx="200" cy="200" r="147" stroke="black" stroke-width="6" />    <circle cx="200" cy="200" r="145" fill="black" stroke="#393939" stroke-width="2" />    <mask id="mask0_7_61" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="61" y="61" width="278" height="278">      <rect x="198" y="61" width="4" height="38" fill="#C4C4C4" />      <rect x="198" y="301" width="4" height="38" fill="#C4C4C4" />      <rect x="61" y="202" width="4" height="38" transform="rotate(-90 61 202)" fill="#C4C4C4" />      <rect x="301" y="202" width="4" height="38" transform="rotate(-90 301 202)" fill="#C4C4C4" />      <rect x="132.232" y="321.378" width="4" height="38" transform="rotate(-150 132.232 321.378)" fill="#C4C4C4" />      <rect x="252.232" y="113.531" width="4" height="38" transform="rotate(-150 252.232 113.531)" fill="#C4C4C4" />      <rect x="80.6224" y="271.232" width="4" height="38" transform="rotate(-120 80.6224 271.232)" fill="#C4C4C4" />      <rect x="288.469" y="151.232" width="4" height="38" transform="rotate(-120 288.469 151.232)" fill="#C4C4C4" />      <rect x="78.6224" y="132.232" width="4" height="38" transform="rotate(-60 78.6224 132.232)" fill="#C4C4C4" />      <rect x="286.469" y="252.232" width="4" height="38" transform="rotate(-60 286.469 252.232)" fill="#C4C4C4" />      <rect x="271.232" y="319.378" width="4" height="38" transform="rotate(150 271.232 319.378)" fill="#C4C4C4" />      <rect x="151.232" y="111.531" width="4" height="38" transform="rotate(150 151.232 111.531)" fill="#C4C4C4" />    </mask>    <g mask="url(#mask0_7_61)">      <mask id="mask1_7_61" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="45" y="41" width="324" height="316">        <rect x="45" y="41" width="324" height="316" fill="url(#paint0_linear_7_61)" />      </mask>      <g mask="url(#mask1_7_61)">        <rect x="13" y="9" width="387" height="359" fill="#F584FF" />        <g filter="url(#filter0_f_7_61)">          <circle cx="82.5" cy="117.5" r="117.5" fill="#FF84CE" />        </g>        <g filter="url(#filter1_f_7_61)">          <circle cx="349.5" cy="239.5" r="117.5" fill="#84A7FF" />        </g>        <g filter="url(#filter2_f_7_61)">          <circle cx="113.5" cy="345.5" r="117.5" fill="#E09191" />        </g>      </g>    </g> ';
-    svgBot = '<circle cx="200" cy="200" r="5" fill="white" />    <defs>      <filter id="filter0_f_7_61" x="-135" y="-100" width="435" height="435" filterUnits="userSpaceOnUse"        color-interpolation-filters="sRGB">        <feFlood flood-opacity="0" result="BackgroundImageFix" />        <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />        <feGaussianBlur stdDeviation="50" result="effect1_foregroundBlur_7_61" />      </filter>      <filter id="filter1_f_7_61" x="132" y="22" width="435" height="435" filterUnits="userSpaceOnUse"        color-interpolation-filters="sRGB">        <feFlood flood-opacity="0" result="BackgroundImageFix" />        <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />        <feGaussianBlur stdDeviation="50" result="effect1_foregroundBlur_7_61" />      </filter>      <filter id="filter2_f_7_61" x="-104" y="128" width="435" height="435" filterUnits="userSpaceOnUse"        color-interpolation-filters="sRGB">        <feFlood flood-opacity="0" result="BackgroundImageFix" />        <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />        <feGaussianBlur stdDeviation="50" result="effect1_foregroundBlur_7_61" />      </filter>      <linearGradient id="paint0_linear_7_61" x1="207" y1="41" x2="207" y2="357" gradientUnits="userSpaceOnUse">        <stop stop-color="#FF84CE" />        <stop offset="1" stop-color="#923DFF" />      </linearGradient>    </defs>  </svg>';
-  }
+   }
 
-  function create(string memory _svg) public {
+  function create(int8 _timeZoneHour, int8 _timeZoneMin) public payable {
+    require(msg.value >= claimPrice, "Insufficient payment");
+    require(claimed[msg.sender] == false, "Already Claimed");
     _safeMint(msg.sender, tokenCounter);
-    setTimeZone(0,30,tokenCounter) ; 
+    setTimeZone(_timeZoneHour,_timeZoneMin,tokenCounter) ; 
+    claimed[msg.sender] = true;
+    userNFTTokenId[msg.sender] = tokenCounter ; 
+    ownerOfNFTId[tokenCounter] = msg.sender ; 
     emit CreatedMomentNFT(tokenCounter);
     tokenCounter = tokenCounter + 1 ; 
+    uint256 refund = msg.value - claimPrice;
+    if (refund > 0) {
+      payable(msg.sender).transfer(refund);
+    }
+  }
+
+  function withdraw() public {
+    payable(withdrawAddress).transfer(address(this).balance);
+  }
+
+  function getUserNFTTokenId(address _userAddress) public view returns (uint256 tokenId){
+    return userNFTTokenId[_userAddress];
+  }
+
+  function getOwnerOfNFTId(uint256 _id) public view returns (address owner){
+    return ownerOfNFTId[_id];
   }
 
   function setTimeZone(int8 _timeZoneHour,int8 _timeZoneMin, uint tokenId) public{

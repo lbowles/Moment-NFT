@@ -8,6 +8,7 @@ module.exports = async({
   deployments,
   getChainId
 }) => {
+
   const {deploy, log} = deployments
   const {deployer} = await getNamedAccounts()
   const chainId = await getChainId()
@@ -17,10 +18,8 @@ module.exports = async({
     from: deployer,
     log: true 
   })
-  log('You have deployed the contract to ' +MOMENTNFT.address )
-  let file = "./img/clock.svg"
-  let svg = fs.readFileSync(file, {encoding:"utf-8"})
 
+  log('You have deployed the contract to ' +MOMENTNFT.address )
   const momentNFTContract = await ethers.getContractFactory("momentNFT")
   const accounts = await hre.ethers.getSigners()
   const signer = accounts[0]
@@ -28,8 +27,8 @@ module.exports = async({
   const networkName = networkConfig[chainId]['name']
   log("Veryify with:  \n npx hardhat verify --network "+networkName+" "+momentSVG.address)
 
-  let tx = await momentSVG.create(svg)
-  let receipt = await tx.wait(1)
-  log("NFT Minted")
-  log("View tokenURI: "+ await momentSVG.tokenURI(0))
+  // let tx = await momentSVG.create(0,0)
+  // let receipt = await tx.wait(1)
+  // log("NFT Minted")
+  // log("View tokenURI: "+ await momentSVG.tokenURI(0))
 }
