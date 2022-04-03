@@ -1,29 +1,26 @@
 import { useAccount, useContractRead, useContractWrite, useProvider, useSigner } from "wagmi"
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router"
-import { PunkDetail } from "../PunkDetail/PunkDetail"
 import { useSyntheticPunks } from "../../hooks/useSyntheticPunks"
 import { useContractAdapter } from "../../hooks/useContractAdapter"
 import { ClaimButton } from "../ClaimButton/ClaimButton"
 import { BigNumber, ethers, Wallet } from "ethers"
-import { Search } from "../Search/Search"
 import { useLocation } from "react-router-dom"
 import { PunkCardHeader } from "../PunkCardHeader/PunkCardHeader"
-import dice from "../../img/dice.svg"
-import style from "./PunkCard.module.css"
+import style from "./MomentCard.module.css"
+import { NFT } from "../NFT/NFT"
 
 const {isAddress, getAddress} = ethers.utils
 
 const claimMessageHash = "0xdf82b3b8802b972d13d60623a6690febbca6142a008135b45c421dd951612158"
 
 export enum AddressType {
-  Search,
   Signer,
   Random,
   Owner
 }
 
-export const PunkCard = () => {
+export const MomentCard = () => {
   const provider = useProvider()
   const [{ data: signer }] = useSigner()
   const [{ data: account }] = useAccount()
@@ -126,12 +123,6 @@ export const PunkCard = () => {
     navigate({pathname: `/address/${wallet.address}`})
   }
 
-  const onSearch = (checksummedAddress: string) => {
-    if (checksummedAddress !== address) {
-      setRandomWallet(undefined)
-      navigate({pathname: `/address/${checksummedAddress}`})
-    }
-  }
 
   const onTwitterShare = () => {
     const tweet = encodeURIComponent(`Check out my Synthetic CryptoPunk! @stephancill @npm_luko`)
@@ -144,15 +135,11 @@ export const PunkCard = () => {
 
 
   return <div style={{width: "90%", maxWidth: "400px"}}>
-    <div style={{display: "flex", marginBottom: "30px", height: "50px"}}>
-      <Search onSearch={onSearch}/>
-      {signer && <button className={style.randomButton} onClick={() => onGenerateRandom()}><img src={dice} alt="Random"/></button>}
-    </div>
-    <div className={style.punkCard}>
-      <div className={style.punkCardContent}>
+    <div className={style.momentCard}>
+      <div className={style.momentCardContent}>
         <PunkCardHeader address={address} addressType={addressType} ownerAddress={ownerAddress as any as string} onTwitterShare={onTwitterShare}/>
+        <NFT timeZoneHour={0} timeZoneMin={0}/>
         {address && <div>
-          <PunkDetail address={address}></PunkDetail>
           {provider && !(!tokenClaimed && !signerCanClaim) && <div style={{paddingBottom: "6px", marginTop: "20px"}}>
             <ClaimButton 
               address={address} 

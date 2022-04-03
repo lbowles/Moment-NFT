@@ -1,0 +1,26 @@
+.cont {
+  text-align: center;
+}
+.mainText{
+  font-weight: 700;
+  font-size: 50px;
+  margin-bottom: 0px;
+  margin-top: 100px;
+  
+  background: linear-gradient(92.91deg, #BCC8FF 5.07%, #FFB5E2 105.09%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+.subText{
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 80px;
+  margin-top: 10px;
+  background: linear-gradient(92.91deg, #BCC8FF 5.07%, #FFB5E2 105.09%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}

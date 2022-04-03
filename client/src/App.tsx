@@ -2,10 +2,9 @@ import './App.css';
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom"
 import { ConnectButton } from './components/ConnectButton/ConnectButton';
 import { useAccount, useNetwork } from 'wagmi';
-import { NeonText } from './components/NeonText/NeonText';
-import { PunkCard } from './components/PunkCard/PunkCard';
+import { MomentHeader } from './components/MomentHeader/MomentHeader';
+import { MomentCard } from './components/MomentCard/MomentCard';
 import { useEffect } from 'react';
-import { Search } from './components/Search/Search';
 import deployments from "./deployments.json"
 import { Copy } from "./components/Copy/Copy"
 import opensea from "./img/opensea.svg"
@@ -13,6 +12,9 @@ import github from "./img/github.svg"
 import etherscan from "./img/etherscan.svg"
 
 const deploymentChain = parseInt(deployments.chainId)
+
+//TODO: Change onpensea link
+//TODO: Change polyscan link
 
 function App() {
   const [{data: account}] = useAccount()
@@ -30,10 +32,10 @@ function App() {
 
   return (
     <div className="App">
-      <NeonText></NeonText>
+      <MomentHeader></MomentHeader>
       <div className="linksContainer" style={{display: "flex"}}>
         <a href="https://opensea.io/collection/synthetic-cryptopunks" target="_blank" rel="noopener noreferrer"><img src={opensea} alt="OpenSea"/></a>
-        <a href="https://github.com/stephancill/synthetic-punks" target="_blank" rel="noopener noreferrer"><img src={github} alt="GitHub"/></a>
+        <a href="https://github.com/lbowles/On-Chain-Clock-NFT" target="_blank" rel="noopener noreferrer"><img src={github} alt="GitHub"/></a>
         <a href={`https://etherscan.io/address/${deployments.contracts.momentNFT.address}`} target="_blank" rel="noopener noreferrer"><img src={etherscan} alt="Etherscan"/></a>
       </div>
       
@@ -54,11 +56,11 @@ function App() {
         <Routes>
           <Route path="/" element={
             <div style={{display: "flex", width: "90%", maxWidth: "400px", marginBottom: "40px"}}>
-              <Search onSearch={(address) => navigate(`/address/${address}`)}/>
+              
             </div>
           }/>
           <Route path="address">
-            <Route path=":address" element={<PunkCard/>}/>
+            <Route path=":address" element={<MomentCard/>}/>
           </Route>
           <Route
               path="*"

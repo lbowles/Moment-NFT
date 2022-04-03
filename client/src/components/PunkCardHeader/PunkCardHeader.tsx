@@ -1,5 +1,5 @@
 import { AddressTypeTag } from "../AddressTypeTag/AddressTypeTag"
-import { AddressType } from "../PunkCard/PunkCard"
+import { AddressType } from "../MomentCard/MomentCard"
 import twitter from "../../img/twitter.svg"
 import style from "./PunkCardHeader.module.css"
 import { truncateAddress } from "../../utilities"
