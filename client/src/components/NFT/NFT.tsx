@@ -4,17 +4,14 @@ interface NFTProps {
   timeZoneHour : number ;
 }
 
-
-
-
-
 export const NFT = ({timeZoneHour}: NFTProps) => {
   const localOffset = new Date().getTimezoneOffset() / 60 
 
   const date = new Date();
-  let hr = date.getHours() + localOffset + timeZoneHour;
+  let hr = +date.getHours() + +localOffset + +timeZoneHour;
   let min = date.getMinutes();
   let sec = date.getSeconds();
+  console.log(hr + " hours")
 
   let hrPosition = (hr * 360) / 12 + (min * (360 / 60)) / 12;
   let minPosition = (min * 360) / 60 + (sec * (360 / 60)) / 60;
