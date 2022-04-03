@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { useContractRead, useProvider, useSigner } from "wagmi"
 import { useSyntheticPunks } from "./../../hooks/useSyntheticPunks"
 import { useContractAdapter } from "../../hooks/useContractAdapter"
-import { getAttributeName } from "../../../../lib"
+//import { getAttributeName } from "../../../../lib"
 import { SpinnerCircular } from 'spinners-react'
 
 import style from "./PunkDetail.module.css"

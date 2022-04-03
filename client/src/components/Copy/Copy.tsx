@@ -19,7 +19,7 @@ export const Copy = () => {
       heading: "Features",
       body: <p>Each Synthetic Punk
         <ul>
-          <li>Is generated from assets stored <a href={`https://etherscan.io/address/${deployments.contracts.SyntheticPunksAssets.address}`}>fully on-chain</a></li>
+          <li>Is generated from assets stored <a href={`https://etherscan.io/address/${deployments.contracts.momentNFT.address}`}>fully on-chain</a></li>
           <li>Is uniquely associated with an ethereum wallet address</li>
           <li>Supports <a href="https://ens.domains/">Ethereum Name Service (ENS)</a> in its metadata</li>
         </ul>

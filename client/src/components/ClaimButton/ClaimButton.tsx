@@ -19,7 +19,7 @@ export const ClaimButton = ({signerCanClaim, claimed, isRandom, tokenId, txHash,
   
   // if claimed, view on opensea
   if (claimed && tokenId) {
-    return <a href={`https://opensea.io/assets/${deployments.contracts.SyntheticPunks.address}/${tokenId.toString()}`}
+    return <a href={`https://opensea.io/assets/${deployments.contracts.momentNFT.address}/${tokenId.toString()}`}
     target="_blank" rel="noreferrer"><button className={style.claimButton}>View on marketplace <img style={{height: "20px", marginLeft: "10px"}} src={opensea} alt=""/></button></a> 
   }
 

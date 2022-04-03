@@ -6,8 +6,8 @@ import { useContract } from "wagmi"
 
 export const useSyntheticPunks = (signerOrProvider: Signer | Provider) => {
   return useContract<SyntheticPunks>({
-    addressOrName: deployments.contracts.SyntheticPunks.address,
-    contractInterface: deployments.contracts.SyntheticPunks.abi,
+    addressOrName: deployments.contracts.momentNFT.address,
+    contractInterface: deployments.contracts.momentNFT.abi,
     signerOrProvider
   })
 }

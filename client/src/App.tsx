@@ -34,7 +34,7 @@ function App() {
       <div className="linksContainer" style={{display: "flex"}}>
         <a href="https://opensea.io/collection/synthetic-cryptopunks" target="_blank" rel="noopener noreferrer"><img src={opensea} alt="OpenSea"/></a>
         <a href="https://github.com/stephancill/synthetic-punks" target="_blank" rel="noopener noreferrer"><img src={github} alt="GitHub"/></a>
-        <a href={`https://etherscan.io/address/${deployments.contracts.SyntheticPunks.address}`} target="_blank" rel="noopener noreferrer"><img src={etherscan} alt="Etherscan"/></a>
+        <a href={`https://etherscan.io/address/${deployments.contracts.momentNFT.address}`} target="_blank" rel="noopener noreferrer"><img src={etherscan} alt="Etherscan"/></a>
       </div>
       
       {isSafari && <div>
