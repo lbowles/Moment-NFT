@@ -2,30 +2,30 @@ import style from "./NFT.module.css"
 
 interface NFTProps {
   timeZoneHour : number ;
-  timeZoneMin : number ; 
 }
 
-const localOffset = new Date().getTimezoneOffset() / 60 
-
-const date = new Date();
-let hr = date.getHours() + localOffset;
-let min = date.getMinutes();
-let sec = date.getSeconds();
-
-let hrPosition = (hr * 360) / 12 + (min * (360 / 60)) / 12;
-let minPosition = (min * 360) / 60 + (sec * (360 / 60)) / 60;
-
-const runClock = () => {
-  hrPosition = hrPosition + 3 / 360;
-  minPosition = minPosition + 6 / 60;
-};
-
-// Use the inbuilt setInterval function to invoke the method we created earlier
-setInterval(runClock, 1000);
 
 
 
-export const NFT = ({timeZoneHour,timeZoneMin}: NFTProps) => {
+
+export const NFT = ({timeZoneHour}: NFTProps) => {
+  const localOffset = new Date().getTimezoneOffset() / 60 
+
+  const date = new Date();
+  let hr = date.getHours() + localOffset + timeZoneHour;
+  let min = date.getMinutes();
+  let sec = date.getSeconds();
+
+  let hrPosition = (hr * 360) / 12 + (min * (360 / 60)) / 12;
+  let minPosition = (min * 360) / 60 + (sec * (360 / 60)) / 60;
+
+  const runClock = () => {
+    hrPosition = hrPosition + 3 / 360;
+    minPosition = minPosition + 6 / 60;
+  };
+
+  // Use the inbuilt setInterval function to invoke the method we created earlier
+  setInterval(runClock, 1000);
   return <div className={style.nft}>
     <div className={style.container}>
       <svg width="100%" height="100%" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">

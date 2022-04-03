@@ -9,6 +9,7 @@ import { useLocation } from "react-router-dom"
 import { PunkCardHeader } from "../PunkCardHeader/PunkCardHeader"
 import style from "./MomentCard.module.css"
 import { NFT } from "../NFT/NFT"
+import { time } from "console"
 
 const {isAddress, getAddress} = ethers.utils
 
@@ -25,6 +26,7 @@ export const MomentCard = () => {
   const [{ data: signer }] = useSigner()
   const [{ data: account }] = useAccount()
   const [randomWallet, setRandomWallet] = useState<Wallet | undefined>()
+  const [UCTOffset, setUCTOffset] = useState <number>((new Date().getTimezoneOffset() / 60)*-1)
   const {address: rawAddress} = useParams()
   const navigate = useNavigate()
   const location = useLocation()
@@ -133,14 +135,35 @@ export const MomentCard = () => {
     window.open(intentURL, "_blank")
   }
 
+  const countries = [
+    {name: 'UCT-11', value: -11},{name: 'UCT-10', value: -10},{name: 'UCT-9', value: -9},{name: 'UCT-8', value: -8},{name: 'UCT-7', value: -7},{name: 'UCT-6', value: -6},{name: 'UCT-5', value: -5},{name: 'UCT-4', value: -4},{name: 'UCT-3', value: -3},{name: 'UCT-2', value: -2},{name: 'UCT-1', value: 1},{name: 'UCT+0', value: 0},{name: 'UCT+1', value: 1},{name: 'UCT+2', value: 2},{name: 'UCT+3', value: 3},{name: 'UCT+4', value: 4},{name: 'UCT+5', value: 5},{name: 'UCT+6', value: 6},{name: 'UCT+7', value: 7},{name: 'UCT+8', value: 8},{name: 'UCT+9', value: 9},{name: 'UCT+10', value: 10},{name: 'UCT+11', value: 11}
+  ]
+
+  let countriesList = countries.length > 0
+    	&& countries.map((item, i) => {
+      return (
+        <option key={i} value={item.value}>{item.name}</option>
+      )
+    }, this);
+
+
+  const UCTSelected = () => {
+    const timeZonePicker = document.getElementById("selectTimeZone")
+    setUCTOffset(timeZonePicker.value) ;
+  }
 
   return <div style={{width: "90%", maxWidth: "400px"}}>
     <div className={style.momentCard}>
       <div className={style.momentCardContent}>
         <PunkCardHeader address={address} addressType={addressType} ownerAddress={ownerAddress as any as string} onTwitterShare={onTwitterShare}/>
-        <NFT timeZoneHour={0} timeZoneMin={0}/>
+        <NFT timeZoneHour={0}/>
         {address && <div>
           {provider && !(!tokenClaimed && !signerCanClaim) && <div style={{paddingBottom: "6px", marginTop: "20px"}}>
+            
+            <select id="selectTimeZone" value={UCTOffset} onChange={()=>{UCTSelected()}}>
+              {countriesList}
+            </select>
+
             <ClaimButton 
               address={address} 
               claimPrice={claimPrice ? claimPrice as any as BigNumber : undefined}

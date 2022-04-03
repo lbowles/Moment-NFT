@@ -36,10 +36,10 @@ export const ClaimButton = ({signerCanClaim, claimed, isRandom, tokenId, txHash,
       return <button className={style.claimButton} disabled={true}>Loading...</button>
     } else {
       if (!isRandom) {
-        return <button className={style.claimButton} onClick={() => onClaim()}>Claim {ethers.utils.formatEther(claimPrice)} ♦</button>
+        return <button className={style.claimButton} onClick={() => onClaim()}>Mint {ethers.utils.formatEther(claimPrice)} Matic</button>
       } else {
         return <div style={{display:"flex"}}>
-          <button className={style.claimButton} onClick={() => onClaimOther()}>Claim {ethers.utils.formatEther(claimPrice)} ♦</button>
+          <button className={style.claimButton} onClick={() => onClaimOther()}>Mint {ethers.utils.formatEther(claimPrice)} Matic</button>
           <button className={`${style.helpBtn} ${style.toolTip}`}>?
             <span className={style.toolTipText}>You may claim this punk and have it sent to your connected wallet </span>
           </button>
