@@ -6,8 +6,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract momentNFT is ERC721 {
 
-
-  uint256 public immutable claimPrice = 15 ether; 
+  uint256 public immutable claimPrice = 0.0001 ether; 
   address public immutable withdrawAddress = 0x245E32DbA4E30b483F618A3940309236AaEbBbC5 ;
   uint public tokenCounter; 
   uint32 constant SECONDS_PER_DAY = 24 * 60 * 60;
@@ -56,29 +55,29 @@ contract momentNFT is ERC721 {
     return ownerOfNFTId[_id];
   }
 
-  function setTimeZone(int8 _timeZoneHour,int8 _timeZoneMin, uint tokenId) public{
-    timeZoneHour[tokenId] = _timeZoneHour ;
-    timeZoneMin[tokenId] = _timeZoneMin ;  
+  function setTimeZone(int8 _timeZoneHour,int8 _timeZoneMin, uint _id) public{
+    timeZoneHour[_id] = _timeZoneHour ;
+    timeZoneMin[_id] = _timeZoneMin ;  
   }
 
-  function svgToImageURI(string memory _svg) public pure returns (string memory){
-    string memory svgBase64Encoded = base64(bytes(string(abi.encodePacked(_svg))))  ; 
-    string memory imageURI = string(abi.encodePacked(svgBase64Encoded));
-    return imageURI;
+  function getTimeZone(uint256 _id) public view returns (int8 UCThourOffset, int8 UCTMinOffset){
+    return (timeZoneHour[_id] ,  timeZoneMin[_id]) ;
   }
 
-  function tokenURI(uint256 id) public view override returns (string memory) {
-    int hr = int(getHour(block.timestamp)) ; 
-    int min = int(getMinute(block.timestamp));
+  function tokenURI(uint256 _id) public view override returns (string memory) {
+    int hr = int(getHour(block.timestamp)) + timeZoneHour[_id] + (timeZoneMin[_id] /60) ; 
+    if (hr<0) {
+      hr = 24+hr;
+    }
+    int min = int(getMinute(block.timestamp)) + timeZoneMin[_id];
     int sec = int(getSecond(block.timestamp)) ;
-    int hrPosition = ((hr+ timeZoneHour[id] + (timeZoneMin[id] /60)) * 360) / 12 + ((min+ timeZoneMin[id]) * (360 / 60)) / 12 ;
-    int minPosition = ((min +timeZoneMin[id]) * 360) / 60 + (sec * (360 / 60)) / 60;
+    int hrPosition = (hr * 360) / 12 + (min * (360 / 60)) / 12 ;
+    int minPosition = (min * 360) / 60 + (sec * (360 / 60)) / 60;
     string memory sHrPosition = Strings.toString(uint(hrPosition)) ; 
     string memory sMinPosition = Strings.toString(uint(minPosition)) ; 
     string memory svgMid = string(abi.encodePacked(' <g id="minute" transform = "rotate(',sMinPosition,'  )">      <path class="minute-arm" d="M200 200V78" />      <circle class="sizing-box" cx="200" cy="200" r="130" />    </g>    <g id="hour" transform = "rotate(',sHrPosition,'  )">      <path class="hour-arm" d="M200 200V140" />      <circle class="sizing-box" cx="200" cy="200" r="130" />    </g>  '));
     string memory svg = string(abi.encodePacked(svgTop, svgMid, svgBot )) ; 
-    string memory imageURI = svgToImageURI(svg) ;
-    string memory json = base64(bytes(abi.encodePacked('{"name": "Moment NFT", "description": "Fully on-chain clock NFT that shows you the current time.", "image": "data:image/svg+xml;base64,',imageURI ,'"}')));
+    string memory json = base64(bytes(abi.encodePacked('{"name": "Moment NFT", "description": "Fully on-chain clock NFT that shows you the current time.", "image": "data:image/svg+xml;base64,',base64(bytes(svg)) ,'"}')));
     return string(abi.encodePacked('data:application/json;base64,', json));
   }
 

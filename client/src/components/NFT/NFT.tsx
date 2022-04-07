@@ -6,9 +6,12 @@ interface NFTProps {
 
 export const NFT = ({timeZoneHour}: NFTProps) => {
   const localOffset = new Date().getTimezoneOffset() / 60 
-
+console.log(localOffset)
   const date = new Date();
   let hr = +date.getHours() + +localOffset + +timeZoneHour;
+  if (hr<0) {
+    hr = 24+hr
+  }
   let min = date.getMinutes();
   let sec = date.getSeconds();
   console.log(hr + " hours")

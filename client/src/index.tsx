@@ -16,6 +16,7 @@ const infuraId = process.env.REACT_APP_INFURA_PROJECT_ID
 
 const deployedChainId = parseInt(deployments.chainId)
 const defaultProvider = deployedChainId === 31337 ? new StaticJsonRpcProvider("http://127.0.0.1:8545/") : new StaticJsonRpcProvider(defaultRPC, deployments.name)
+console.log(defaultProvider)
 
 // Chains for connectors to support
 const chains = [...developmentChains, ...defaultChains].filter(chain => chain.id === parseInt(deployments.chainId))

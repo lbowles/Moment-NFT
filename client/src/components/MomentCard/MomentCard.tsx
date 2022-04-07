@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router"
 import { useSyntheticPunks } from "../../hooks/useSyntheticPunks"
 import { useContractAdapter } from "../../hooks/useContractAdapter"
+import deployments from "../../deployments.json"
 import { ClaimButton } from "../ClaimButton/ClaimButton"
 import { BigNumber, ethers, Wallet } from "ethers"
 import { useLocation } from "react-router-dom"
@@ -14,8 +15,9 @@ import { time } from "console"
 //TODO: add the +min uct time
 
 const {isAddress, getAddress} = ethers.utils
+var contractAddress
+var momentNFT : any
 
-const claimMessageHash = "0xdf82b3b8802b972d13d60623a6690febbca6142a008135b45c421dd951612158"
 
 export enum AddressType {
   Signer,
@@ -29,104 +31,72 @@ export const MomentCard = () => {
   const [{ data: account }] = useAccount()
   const [randomWallet, setRandomWallet] = useState<Wallet | undefined>()
   const [UCTOffset, setUCTOffset] = useState <number>((new Date().getTimezoneOffset() / 60)*-1)
+  const [tokenClaimed,setTokenClaimed] = useState<boolean>()
+  const [NFTimg,setNFTimg] = useState<any>()
   const {address: rawAddress} = useParams()
   const navigate = useNavigate()
   const location = useLocation()
+  const [currentTx, setCurrentTx] = useState<ethers.providers.TransactionResponse | undefined>()
 
   const address = rawAddress ? isAddress(rawAddress.toLowerCase()) ? getAddress(rawAddress.toLowerCase()) : undefined : undefined
 
-  const syntheticPunks = useSyntheticPunks(signer || provider)
-  const syntheticPunksConfig = useContractAdapter(syntheticPunks)
+  const claimMessageHash = "0xdf82b3b8802b972d13d60623a6690febbca6142a008135b45c421dd951612158"
+  contractAddress = deployments.contracts.momentNFT.address
+  momentNFT = (new ethers.Contract(contractAddress,deployments.contracts.momentNFT.abi,signer))
 
-  const [currentTx, setCurrentTx] = useState<ethers.providers.TransactionResponse | undefined>()
-
-  const [{ data: tokenClaimed }, readTokenClaimed] = useContractRead(
-    syntheticPunksConfig,
-    "claimed",
-    {args: [address]}
-  ) 
-
-  const [{ data: tokenId }, readTokenId] = useContractRead(
-    syntheticPunksConfig,
-    "getTokenID",
-    {args: [address]}
-  ) 
-
-  const [{ data: claimPrice }] = useContractRead(
-    syntheticPunksConfig,
-    "claimPrice",
-  ) 
-
-  const [{ data: ownerAddress }, readOwnerAddress] = useContractRead(
-    syntheticPunksConfig,
-    "ownerOf",
-    {args: [tokenId]}
-  ) 
-
-  const [, claim] = useContractWrite(
-    syntheticPunksConfig,
-    "claim",
-    {overrides: {value: claimPrice}}
-  )
-
-  const [, claimOther] = useContractWrite(
-    syntheticPunksConfig,
-    "claimOther"
-  )
-
-  const signerCanClaim = address === account?.address || address === randomWallet?.address
-  const addressType = (account?.address && (account?.address === ownerAddress as any as string)) ? AddressType.Owner : randomWallet?.address === address ? AddressType.Random : account?.address === address ? AddressType.Signer : AddressType.Search
+  //const syntheticPunks = useSyntheticPunks(signer || provider)
+  //const syntheticPunksConfig = useContractAdapter(syntheticPunks)
 
   useEffect(() => {
-
-    readTokenId()
-  // eslint-disable-next-line
-  }, [address, currentTx, provider])
-
-  useEffect(() => {
-    readTokenClaimed()
-    readOwnerAddress()
-  // eslint-disable-next-line
-  }, [tokenId])
-
-  useEffect(() => {
-    if (!signer) {
-      setRandomWallet(undefined)
-    }
-  }, [signer])
+    isClaimed()
+  }, [provider,account])
 
   useEffect(() => {
     if (currentTx) {
       console.log("new tx", currentTx.hash)
       currentTx.wait().then(() => {
         setCurrentTx(undefined)
-
       })
       console.log("tx done")
     }
   }, [currentTx]) 
 
-  const onClaim = () => {
-    claim().then(({data: tx}) => setCurrentTx(tx))
+  const isClaimed = async () => {
+    console.log("is claimed")
+    var isclaim = await momentNFT.claimed(account?.address)
+    setTokenClaimed(isclaim)
+    if (isclaim === true) {
+      getTokenURI()
+    }
   }
+
+  const getTokenURI = async () => {
+    console.log("get token uri")
+    const tokenId = await getTokenId()
+    var tokenURI = await momentNFT.tokenURI(tokenId)
+    tokenURI = window.atob(tokenURI.split(",")[1])
+    console.log(JSON.parse(tokenURI))
+
+   }
+
+  const getTokenId = async () => {
+    console.log("VIEW Token Id")
+    const tokenId = await momentNFT.getUserNFTTokenId(account?.address)
+    return parseInt(tokenId.toString())
+  }
+  
+
+
+  // const onClaim = () => {
+  //   console.log("s")
+  //   claim().then(({data: tx}) => setCurrentTx(tx))
+  // }
 
   const onClaimRandom = () => {
     if (!randomWallet) {
       return
-    }
-    
-    randomWallet.signMessage(ethers.utils.arrayify(claimMessageHash)).then(signature => {
-      claimOther({args: [randomWallet.address, signature], overrides: {value: claimPrice}}).then(({data: tx}) => setCurrentTx(tx))
-    })    
+    }  
   }
-
-  const onGenerateRandom = () => {
-    const wallet = ethers.Wallet.createRandom()
-    setRandomWallet(wallet)
-    console.log("navigating to ", wallet.address)
-    navigate({pathname: `/address/${wallet.address}`})
-  }
-
 
   const onTwitterShare = () => {
     const tweet = encodeURIComponent(`Check out my Synthetic CryptoPunk! @stephancill @npm_luko`)
@@ -157,7 +127,7 @@ export const MomentCard = () => {
   return <div style={{width: "90%", maxWidth: "400px"}}>
     <div className={style.momentCard}>
       <div className={style.momentCardContent}>
-        <PunkCardHeader address={address} addressType={addressType} ownerAddress={ownerAddress as any as string} onTwitterShare={onTwitterShare}/>
+        {/* <PunkCardHeader address={address} addressType={addressType} ownerAddress={ownerAddress as any as string} onTwitterShare={onTwitterShare}/>
         <NFT timeZoneHour={UCTOffset}/>
         {address && <div>
           {provider && !(!tokenClaimed && !signerCanClaim) && <div style={{paddingBottom: "6px", marginTop: "20px"}}>
@@ -176,7 +146,7 @@ export const MomentCard = () => {
               onClaimOther={onClaimRandom}
               />
           </div>}
-        </div>}
+        </div>} */}
       </div>
     </div>
   </div>
