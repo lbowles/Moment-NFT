@@ -32,7 +32,7 @@ export const MomentCard = () => {
   const [randomWallet, setRandomWallet] = useState<Wallet | undefined>()
   const [UCTOffset, setUCTOffset] = useState <number>((new Date().getTimezoneOffset() / 60)*-1)
   const [tokenClaimed,setTokenClaimed] = useState<boolean>()
-  const [NFTimg,setNFTimg] = useState<any>()
+  const [NFTimg,setNFTimg] = useState<string | undefined>("")
   const {address: rawAddress} = useParams()
   const navigate = useNavigate()
   const location = useLocation()
@@ -75,8 +75,8 @@ export const MomentCard = () => {
     const tokenId = await getTokenId()
     var tokenURI = await momentNFT.tokenURI(tokenId)
     tokenURI = window.atob(tokenURI.split(",")[1])
-    console.log(JSON.parse(tokenURI))
-
+    console.log(JSON.parse(tokenURI).image)
+    setNFTimg(JSON.parse(tokenURI).image)
    }
 
   const getTokenId = async () => {
@@ -127,6 +127,7 @@ export const MomentCard = () => {
   return <div style={{width: "90%", maxWidth: "400px"}}>
     <div className={style.momentCard}>
       <div className={style.momentCardContent}>
+        <img src={NFTimg} style={{width:"340px", marginTop:"10px"}}></img>
         {/* <PunkCardHeader address={address} addressType={addressType} ownerAddress={ownerAddress as any as string} onTwitterShare={onTwitterShare}/>
         <NFT timeZoneHour={UCTOffset}/>
         {address && <div>
