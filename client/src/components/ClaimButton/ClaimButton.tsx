@@ -22,7 +22,7 @@ export const ClaimButton = ({claimed, tokenId, txHash, claimPrice, onClaim}: ICl
     target="_blank" rel="noreferrer"><button className={style.claimButton}>View on marketplace <img style={{height: "20px", marginLeft: "10px"}} src={opensea} alt=""/></button></a> 
   }
 
-  // if there is a transaction hash, open etherscan
+  // if there is a transaction hash, open polygonscan
   if (txHash) {
     return <a href={`https://polygonscan.com/tx/${txHash}`} target="_blank" rel="noreferrer">
       <button className={style.claimButton}>View pending transaction</button>

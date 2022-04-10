@@ -2,6 +2,7 @@ import { useAccount, useProvider, useSigner } from "wagmi"
 import { useEffect, useState } from "react"
 import deployments from "../../deployments.json"
 import { ClaimButton } from "../ClaimButton/ClaimButton"
+import { UpdateTimeZoneButton } from "../UpdateTimeZoneButton/UpdateTimeZoneButton"
 import { BigNumber, ethers } from "ethers"
 import { MomentCardHeader } from "../MomentCardHeader/MomentCardHeader"
 import style from "./MomentCard.module.css"
@@ -29,7 +30,9 @@ export const MomentCard = () => {
   const [tokenClaimed,setTokenClaimed] = useState<boolean>()
   const [tokenId,setTokenId] = useState<BigNumber>()
   const [claimPrice,setClaimPrice] = useState<BigNumber>()
+  const [currentTimeZone,setCurrentTimeZone] = useState<number>()
   const [editTimeZone,setEditTimeZone] = useState<Boolean>(false)
+  const [updateTimeZone,setUpdateTimeZone] = useState<Boolean>(false)
   const [editTimeZoneBtn,setEditTimeZoneBtn] = useState<string>("Edit Time Zone")
 
   const [NFTimg,setNFTimg] = useState<string | undefined>("")
@@ -52,6 +55,8 @@ export const MomentCard = () => {
         setCurrentTx(undefined)
       })
       console.log("tx done")
+      getUCTOffset()
+      setUpdateTimeZone(false)
     }
   }, [currentTx]) 
 
@@ -88,14 +93,26 @@ export const MomentCard = () => {
   const onClaim = async () => {
     try { 
       //const ctx = await momentNFT.create(UCTOffset,0,{value: claimPrice}).then(({data: tx}) => setCurrentTx(tx))
-      setCurrentTx(await momentNFT.create(UCTOffset,0,{value: claimPrice}))
+      setCurrentTx(await momentNFT.create(UCTOffset,+0,{value: claimPrice}))
     } catch (error) {
       console.log(error)
     }
   }
 
   const getUCTOffset= async ()=> {
-    setUCTOffset(await momentNFT.getTimeZone(getTokenId()))
+    var tempZone =  parseInt(await momentNFT.getTimeZone(getTokenId()))
+    setCurrentTimeZone(tempZone)
+    setUCTOffset(tempZone)
+    console.log(tempZone)
+  }
+
+  const onUpdateTimeZone = async () => {
+    console.log("Update Time Zone")
+    try { 
+      setCurrentTx(await momentNFT.setTimeZone(UCTOffset,+0,getTokenId()))
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const onTwitterShare = () => {
@@ -118,13 +135,10 @@ export const MomentCard = () => {
       )
     }, this);
 
-
   const UCTSelected = () => {
-    const timeZonePicker = document.getElementById("selectTimeZone")
-    setUCTOffset(timeZonePicker.value) ;
+    const timeZonePicker = (document.getElementById("selectTimeZone")as HTMLTextAreaElement)
+    console.log(timeZonePicker)
   }
-
-
   const toggleEditTimeZone = () => {
     getUCTOffset()
     if (editTimeZone === true) {
@@ -135,6 +149,16 @@ export const MomentCard = () => {
     setEditTimeZone(!editTimeZone)
   }
 
+  const toggleUpdateTimeZoneBtn = () => {
+    let timeZonePicker = (document.getElementById("selectUpdateTimeZone")as HTMLTextAreaElement)
+    if (parseInt(timeZonePicker.value) != currentTimeZone) {
+      setUpdateTimeZone(true) 
+    } else {
+      setUpdateTimeZone(false)
+    }
+    setUCTOffset(timeZonePicker.value) ;
+  }
+
   return <div style={{width: "90%", maxWidth: "400px"}}>
     <div className={style.momentCard}>
       <div className={style.momentCardContent}>
@@ -143,10 +167,17 @@ export const MomentCard = () => {
           {provider && (tokenClaimed) && <div style={{paddingBottom: "6px", marginTop: "20px"}}>
             <img src={NFTimg} style={{width:"340px", marginBottom:"20px"}}></img>
             <button className={style.editTimeZoneBtn} onClick={()=>{toggleEditTimeZone()}}>{editTimeZoneBtn}</button>
-            {editTimeZone && 
-              <select className={style.selectTimeZone} id="selectTimeZone" value={UCTOffset} onChange={()=>{UCTSelected()}}>
+            {editTimeZone && <>
+              <select className={style.selectTimeZone} id="selectUpdateTimeZone" value={UCTOffset} onChange={()=>{toggleUpdateTimeZoneBtn()}}>
                 {countriesList}
               </select>
+              {updateTimeZone && <>
+              <UpdateTimeZoneButton 
+              txHash={currentTx?.hash}
+              onUpdateTimeZone={onUpdateTimeZone}
+              />
+              </>}
+            </>
             }
             <div className={style.divider}></div>
             <ClaimButton 
