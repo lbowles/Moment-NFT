@@ -10,6 +10,8 @@ import { NFT } from "../NFT/NFT"
 
 //TODO: add the +min uct time
 //TODO: update share on twitter
+//TODO: show current timezone when editing 
+//TODO: scaling on mobile
 
 const {isAddress, getAddress} = ethers.utils
 var contractAddress
@@ -46,6 +48,7 @@ export const MomentCard = () => {
   useEffect(() => {
     isClaimed()
     getClaimPrice()
+    getUCTOffset()
   },[signer,provider])
 
   useEffect(() => {
@@ -104,6 +107,7 @@ export const MomentCard = () => {
     setCurrentTimeZone(tempZone)
     setUCTOffset(tempZone)
     console.log(tempZone)
+    return tempZone
   }
 
   const onUpdateTimeZone = async () => {
@@ -166,7 +170,10 @@ export const MomentCard = () => {
         {address && <div>
           {provider && (tokenClaimed) && <div style={{paddingBottom: "6px", marginTop: "20px"}}>
             <img src={NFTimg} style={{width:"340px", marginBottom:"20px"}}></img>
+            <div style={{display:"flex"}}>
             <button className={style.editTimeZoneBtn} onClick={()=>{toggleEditTimeZone()}}>{editTimeZoneBtn}</button>
+            <h3 style={{marginTop:"5px",textAlign:"right",width:"100%"}}>Current Time Zone : {currentTimeZone} UCT</h3>
+            </div>
             {editTimeZone && <>
               <select className={style.selectTimeZone} id="selectUpdateTimeZone" value={UCTOffset} onChange={()=>{toggleUpdateTimeZoneBtn()}}>
                 {countriesList}

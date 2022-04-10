@@ -26,7 +26,8 @@
 }
 
 .editTimeZoneBtn{
-  width: 120px;
+  width: 125px;
+  min-width: 125px;
   margin-bottom: 20px;
   background: none;
   border: solid 2px var(--accent);
@@ -34,6 +35,7 @@
   border-radius: 5px;
   height: 30px;
   font-weight: bold;
+  font-size: 15px;
 }
 .editTimeZoneBtn:hover{
   background-color: var(--accent);
