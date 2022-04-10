@@ -1,18 +1,14 @@
-import { useAccount, useContractRead, useContractWrite, useProvider, useSigner } from "wagmi"
+import { useAccount, useProvider, useSigner } from "wagmi"
 import { useEffect, useState } from "react"
-import { useParams, useNavigate } from "react-router"
-import { useSyntheticPunks } from "../../hooks/useSyntheticPunks"
-import { useContractAdapter } from "../../hooks/useContractAdapter"
 import deployments from "../../deployments.json"
 import { ClaimButton } from "../ClaimButton/ClaimButton"
-import { BigNumber, ethers, Wallet } from "ethers"
-import { useLocation } from "react-router-dom"
-import { PunkCardHeader } from "../PunkCardHeader/PunkCardHeader"
+import { BigNumber, ethers } from "ethers"
+import { MomentCardHeader } from "../MomentCardHeader/MomentCardHeader"
 import style from "./MomentCard.module.css"
 import { NFT } from "../NFT/NFT"
-import { time } from "console"
 
 //TODO: add the +min uct time
+//TODO: update share on twitter
 
 const {isAddress, getAddress} = ethers.utils
 var contractAddress
@@ -29,27 +25,23 @@ export const MomentCard = () => {
   const provider = useProvider()
   const [{ data: signer }] = useSigner()
   const [{ data: account }] = useAccount()
-  const [randomWallet, setRandomWallet] = useState<Wallet | undefined>()
   const [UCTOffset, setUCTOffset] = useState <number>((new Date().getTimezoneOffset() / 60)*-1)
   const [tokenClaimed,setTokenClaimed] = useState<boolean>()
+  const [tokenId,setTokenId] = useState<BigNumber>()
+  const [claimPrice,setClaimPrice] = useState<BigNumber>()
+
   const [NFTimg,setNFTimg] = useState<string | undefined>("")
-  const {address: rawAddress} = useParams()
-  const navigate = useNavigate()
-  const location = useLocation()
   const [currentTx, setCurrentTx] = useState<ethers.providers.TransactionResponse | undefined>()
 
-  const address = rawAddress ? isAddress(rawAddress.toLowerCase()) ? getAddress(rawAddress.toLowerCase()) : undefined : undefined
+  const address =  isAddress((account?.address!) ) ? getAddress((account?.address!)) : undefined 
 
-  const claimMessageHash = "0xdf82b3b8802b972d13d60623a6690febbca6142a008135b45c421dd951612158"
   contractAddress = deployments.contracts.momentNFT.address
   momentNFT = (new ethers.Contract(contractAddress,deployments.contracts.momentNFT.abi,signer))
 
-  //const syntheticPunks = useSyntheticPunks(signer || provider)
-  //const syntheticPunksConfig = useContractAdapter(syntheticPunks)
-
   useEffect(() => {
     isClaimed()
-  }, [provider,account])
+    getClaimPrice()
+  },[signer,provider])
 
   useEffect(() => {
     if (currentTx) {
@@ -62,7 +54,7 @@ export const MomentCard = () => {
   }, [currentTx]) 
 
   const isClaimed = async () => {
-    console.log("is claimed")
+    console.log(account?.address)
     var isclaim = await momentNFT.claimed(account?.address)
     setTokenClaimed(isclaim)
     if (isclaim === true) {
@@ -81,26 +73,28 @@ export const MomentCard = () => {
 
   const getTokenId = async () => {
     console.log("VIEW Token Id")
-    const tokenId = await momentNFT.getUserNFTTokenId(account?.address)
-    return parseInt(tokenId.toString())
+    const tempId = await momentNFT.getUserNFTTokenId(account?.address)
+    setTokenId(tempId.toString())
+    return parseInt(tempId.toString())
   }
-  
 
+  const getClaimPrice = async () => {
+    const tempClaimPrice = await momentNFT.claimPrice()
+    setClaimPrice(tempClaimPrice)
+  }
 
-  // const onClaim = () => {
-  //   console.log("s")
-  //   claim().then(({data: tx}) => setCurrentTx(tx))
-  // }
-
-  const onClaimRandom = () => {
-    if (!randomWallet) {
-      return
-    }  
+  const onClaim = async () => {
+    try { 
+      //const ctx = await momentNFT.create(UCTOffset,0,{value: claimPrice}).then(({data: tx}) => setCurrentTx(tx))
+      setCurrentTx(await momentNFT.create(UCTOffset,0,{value: claimPrice}))
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const onTwitterShare = () => {
-    const tweet = encodeURIComponent(`Check out my Synthetic CryptoPunk! @stephancill @npm_luko`)
-    const ctaURL = encodeURIComponent(`https://syntheticpunks.com/#${location.pathname}`)
+    const tweet = encodeURIComponent(`Check out my wa CryptoPunk! @stephancill @npm_luko`)
+    const ctaURL = encodeURIComponent(`https://syntheticpunks.com/`)
     const related = encodeURIComponent(`stephancill,npm_luko,larvalabs,lootproject`)
     const intentBaseURL = `https://twitter.com/intent/tweet`
     const intentURL = `${intentBaseURL}?text=${tweet}&url=${ctaURL}&related=${related}`
@@ -127,27 +121,35 @@ export const MomentCard = () => {
   return <div style={{width: "90%", maxWidth: "400px"}}>
     <div className={style.momentCard}>
       <div className={style.momentCardContent}>
-        <img src={NFTimg} style={{width:"340px", marginTop:"10px"}}></img>
-        {/* <PunkCardHeader address={address} addressType={addressType} ownerAddress={ownerAddress as any as string} onTwitterShare={onTwitterShare}/>
-        <NFT timeZoneHour={UCTOffset}/>
+        <MomentCardHeader address={account?.address as any as string} onTwitterShare={onTwitterShare}/>
         {address && <div>
-          {provider && !(!tokenClaimed && !signerCanClaim) && <div style={{paddingBottom: "6px", marginTop: "20px"}}>
+          {provider && (tokenClaimed) && <div style={{paddingBottom: "6px", marginTop: "20px"}}>
+            <img src={NFTimg} style={{width:"340px", marginBottom:"20px"}}></img>
+            
+            <ClaimButton 
+              address={address} 
+              claimPrice={claimPrice ? claimPrice as any as BigNumber : undefined}
+              claimed={tokenClaimed as any as boolean}
+              tokenId={tokenId as any as BigNumber} 
+              txHash={currentTx?.hash}
+              onClaim={onClaim}
+              />
+          </div>} 
+          {provider && (!tokenClaimed) && <div style={{paddingBottom: "6px", marginTop: "20px"}}>
+            <NFT timeZoneHour={UCTOffset}/>
             <select className={style.selectTimeZone} id="selectTimeZone" value={UCTOffset} onChange={()=>{UCTSelected()}}>
               {countriesList}
             </select>
             <ClaimButton 
               address={address} 
               claimPrice={claimPrice ? claimPrice as any as BigNumber : undefined}
-              isRandom={randomWallet !== undefined}
-              signerCanClaim={signerCanClaim} 
               claimed={tokenClaimed as any as boolean}
               tokenId={tokenId as any as BigNumber} 
               txHash={currentTx?.hash}
               onClaim={onClaim}
-              onClaimOther={onClaimRandom}
               />
           </div>}
-        </div>} */}
+        </div>}
       </div>
     </div>
   </div>

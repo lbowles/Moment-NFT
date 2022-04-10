@@ -3,19 +3,18 @@ import deployments from "../../deployments.json"
 import style from "./ClaimButton.module.css"
 import opensea from "../../img/opensea.svg"
 
+//TODO: check opensea link works
+
 interface IClaimedButtonProps {
   address: string
-  signerCanClaim: boolean
-  isRandom: boolean
   claimPrice?: BigNumber
   tokenId?: BigNumber
   claimed?: boolean
   txHash?: string
   onClaim: () => void
-  onClaimOther: () => void
 }
 
-export const ClaimButton = ({signerCanClaim, claimed, isRandom, tokenId, txHash, claimPrice, onClaim, onClaimOther}: IClaimedButtonProps) => {
+export const ClaimButton = ({claimed, tokenId, txHash, claimPrice, onClaim}: IClaimedButtonProps) => {
   
   // if claimed, view on opensea
   if (claimed && tokenId) {
@@ -25,26 +24,17 @@ export const ClaimButton = ({signerCanClaim, claimed, isRandom, tokenId, txHash,
 
   // if there is a transaction hash, open etherscan
   if (txHash) {
-    return <a href={`https://etherscan.io/tx/${txHash}`} target="_blank" rel="noreferrer">
+    return <a href={`https://polygonscan.com/tx/${txHash}`} target="_blank" rel="noreferrer">
       <button className={style.claimButton}>View pending transaction</button>
     </a> 
   }
 
   // if not claimed and claimable, claim
-  if (signerCanClaim && !claimed) {
+  if (!claimed) {
     if (!claimPrice) {
       return <button className={style.claimButton} disabled={true}>Loading...</button>
     } else {
-      if (!isRandom) {
-        return <button className={style.claimButton} onClick={() => onClaim()}>Mint {ethers.utils.formatEther(claimPrice)} Matic</button>
-      } else {
-        return <div style={{display:"flex"}}>
-          <button className={style.claimButton} onClick={() => onClaimOther()}>Mint {ethers.utils.formatEther(claimPrice)} Matic</button>
-          <button className={`${style.helpBtn} ${style.toolTip}`}>?
-            <span className={style.toolTipText}>You may claim this punk and have it sent to your connected wallet </span>
-          </button>
-        </div> 
-      }
+      return <button className={style.claimButton} onClick={() => onClaim()}>Mint {ethers.utils.formatEther(claimPrice)} Matic</button>
     }
   }
 

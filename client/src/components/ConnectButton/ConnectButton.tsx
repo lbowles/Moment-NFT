@@ -26,8 +26,7 @@ export const ConnectButton = () => {
       {accountData 
       ? 
         <div style={{width:"100%",display:"flex"}}>
-          <button className={style.connectBtn} style={{width:"328px"}} onClick={() => disconnect()}>Disconnect {ensName || truncateAddress(accountData.address)}</button>
-          <button className={style.homeBtn} onClick={()=>{navigate(`/address/${accountData.address}`)}}><img src={house} alt="house" className={style.homeIcon}></img></button>
+          <button className={style.connectBtn} style={{width:"100%"}} onClick={() => disconnect()}>Disconnect {ensName || truncateAddress(accountData.address)}</button>
         </div>
       : 
         <button className={style.connectBtn} onClick={() => setIsConnecting(!isConnecting)}>Connect to claim</button> 

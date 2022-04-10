@@ -36,7 +36,7 @@ function App() {
       <div className="linksContainer" style={{display: "flex"}}>
         <a href="https://opensea.io/collection/synthetic-cryptopunks" target="_blank" rel="noopener noreferrer"><img src={opensea} alt="OpenSea"/></a>
         <a href="https://github.com/lbowles/On-Chain-Clock-NFT" target="_blank" rel="noopener noreferrer"><img src={github} alt="GitHub"/></a>
-        <a href={`https://etherscan.io/address/${deployments.contracts.momentNFT.address}`} target="_blank" rel="noopener noreferrer"><img src={etherscan} alt="Etherscan"/></a>
+        <a href={`https://polygonscan.com/address/${deployments.contracts.momentNFT.address}`} target="_blank" rel="noopener noreferrer"><img src={etherscan} alt="Etherscan"/></a>
       </div>
       
       {isSafari && <div>
@@ -52,25 +52,11 @@ function App() {
         <div style={{marginBottom:"30px",width: "90%",textAlign:"center"}}>
           <button className="switchNetworkBtn" onClick={() => switchNetwork(deploymentChain)}>Switch to {deployments.name}</button>
         </div>
-      :
-        <Routes>
-          <Route path="/" element={
-            <div style={{display: "flex", width: "90%", maxWidth: "400px", marginBottom: "40px"}}>
-              
-            </div>
-          }/>
-          <Route path="address">
-            <Route path=":address" element={<MomentCard/>}/>
-          </Route>
-          <Route
-              path="*"
-              element={
-                <main style={{ padding: "1rem" }}>
-                  <p>There's nothing here!</p>
-                </main>
-              }
-            />
-        </Routes>
+      :<>
+        {account && 
+         <MomentCard/>
+        }
+        </>
       }
       <Copy/>
       <footer style={{marginBottom: "20px"}}>

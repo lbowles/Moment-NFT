@@ -25,7 +25,6 @@ console.log(localOffset)
   };
 
   // Use the inbuilt setInterval function to invoke the method we created earlier
-  setInterval(runClock, 1000);
   return <div className={style.nft}>
     <div className={style.container}>
       <svg width="100%" height="100%" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
