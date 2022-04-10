@@ -29,6 +29,8 @@ export const MomentCard = () => {
   const [tokenClaimed,setTokenClaimed] = useState<boolean>()
   const [tokenId,setTokenId] = useState<BigNumber>()
   const [claimPrice,setClaimPrice] = useState<BigNumber>()
+  const [editTimeZone,setEditTimeZone] = useState<Boolean>(false)
+  const [editTimeZoneBtn,setEditTimeZoneBtn] = useState<string>("Edit Time Zone")
 
   const [NFTimg,setNFTimg] = useState<string | undefined>("")
   const [currentTx, setCurrentTx] = useState<ethers.providers.TransactionResponse | undefined>()
@@ -92,6 +94,10 @@ export const MomentCard = () => {
     }
   }
 
+  const getUCTOffset= async ()=> {
+    setUCTOffset(await momentNFT.getTimeZone(getTokenId()))
+  }
+
   const onTwitterShare = () => {
     const tweet = encodeURIComponent(`Check out my wa CryptoPunk! @stephancill @npm_luko`)
     const ctaURL = encodeURIComponent(`https://syntheticpunks.com/`)
@@ -118,6 +124,17 @@ export const MomentCard = () => {
     setUCTOffset(timeZonePicker.value) ;
   }
 
+
+  const toggleEditTimeZone = () => {
+    getUCTOffset()
+    if (editTimeZone === true) {
+      setEditTimeZoneBtn("Edit Time Zone") 
+    } else {
+      setEditTimeZoneBtn("Cancel")
+    }
+    setEditTimeZone(!editTimeZone)
+  }
+
   return <div style={{width: "90%", maxWidth: "400px"}}>
     <div className={style.momentCard}>
       <div className={style.momentCardContent}>
@@ -125,7 +142,13 @@ export const MomentCard = () => {
         {address && <div>
           {provider && (tokenClaimed) && <div style={{paddingBottom: "6px", marginTop: "20px"}}>
             <img src={NFTimg} style={{width:"340px", marginBottom:"20px"}}></img>
-            
+            <button className={style.editTimeZoneBtn} onClick={()=>{toggleEditTimeZone()}}>{editTimeZoneBtn}</button>
+            {editTimeZone && 
+              <select className={style.selectTimeZone} id="selectTimeZone" value={UCTOffset} onChange={()=>{UCTSelected()}}>
+                {countriesList}
+              </select>
+            }
+            <div className={style.divider}></div>
             <ClaimButton 
               address={address} 
               claimPrice={claimPrice ? claimPrice as any as BigNumber : undefined}
