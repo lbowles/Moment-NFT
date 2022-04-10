@@ -107,6 +107,7 @@ export const MomentCard = () => {
     setCurrentTimeZone(tempZone)
     setUCTOffset(tempZone)
     console.log(tempZone)
+    getTokenURI()
     return tempZone
   }
 
