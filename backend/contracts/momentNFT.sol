@@ -91,7 +91,7 @@ contract momentNFT is ERC721 {
 
     string memory svgMid = string(abi.encodePacked(' <g id="minute" transform = "rotate(',sMinPosition,'  )">      <path class="minute-arm" d="M200 200V78" />      <circle class="sizing-box" cx="200" cy="200" r="130" />    </g>    <g id="hour" transform = "rotate(',sHrPosition,'  )">      <path class="hour-arm" d="M200 200V140" />      <circle class="sizing-box" cx="200" cy="200" r="130" />    </g>  '));
     string memory svg = string(abi.encodePacked(svgTop, svgMid, svgBot )) ; 
-    string memory json = base64(bytes(abi.encodePacked('{"name": "MomentNFT ',sTokenId,'", "description": "Fully on-chain clock NFT that shows you the current time. Time zone set to ',sTimeZoneHourSign,sTimeZoneHour,' UCT", "image": "data:image/svg+xml;base64,',base64(bytes(svg)) ,'"}')));
+    string memory json = base64(bytes(abi.encodePacked('{"name": "MomentNFT ',sTokenId,'", "description": "Fully on-chain clock NFT that shows you the current time. Time zone set to ',sTimeZoneHourSign,sTimeZoneHour,' UCT.", "image": "data:image/svg+xml;base64,',base64(bytes(svg)) ,'"}')));
     return string(abi.encodePacked('data:application/json;base64,', json));
   }
 
