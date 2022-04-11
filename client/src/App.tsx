@@ -20,7 +20,6 @@ function App() {
 
   var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-
   return (
     <div className="App">
       <MomentHeader></MomentHeader>

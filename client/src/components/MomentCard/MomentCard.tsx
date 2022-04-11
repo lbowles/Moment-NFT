@@ -28,7 +28,7 @@ export const MomentCard = () => {
   const provider = useProvider()
   const [{ data: signer }] = useSigner()
   const [{ data: account }] = useAccount()
-  const [UCTOffset, setUCTOffset] = useState <number>((new Date().getTimezoneOffset() / 60)*-1)
+  const [UCTOffset, setUCTOffset] = useState<number>((new Date().getTimezoneOffset() / 60)*-1)
   const [tokenClaimed,setTokenClaimed] = useState<boolean>()
   const [tokenId,setTokenId] = useState<BigNumber>()
   const [claimPrice,setClaimPrice] = useState<BigNumber>()
@@ -57,11 +57,15 @@ export const MomentCard = () => {
       currentTx.wait().then(() => {
         setCurrentTx(undefined)
       })
-      console.log("tx done")
-      let timeZonePicker = (document.getElementById("selectUpdateTimeZone")as HTMLTextAreaElement)
-      setCurrentTimeZone(timeZonePicker.value)
-      setUCTOffset(timeZonePicker.value)
-      setUpdateTimeZone(false)
+    } else {
+      function delay(time:any) {
+        return new Promise(resolve => setTimeout(resolve, time));
+      }
+      delay(3000).then(async() => {
+        getTokenURI()
+        getUCTOffset()
+        setUpdateTimeZone(false)
+      });
     }
   }, [currentTx]) 
 
@@ -106,7 +110,7 @@ export const MomentCard = () => {
 
   const getUCTOffset= async ()=> {
     var tempZone =  parseInt(await momentNFT.getTimeZone(getTokenId()))
-    setCurrentTimeZone(tempZone)
+    await setCurrentTimeZone(tempZone)
     setUCTOffset(tempZone)
     console.log(tempZone)
     getTokenURI()
