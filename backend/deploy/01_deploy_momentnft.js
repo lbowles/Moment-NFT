@@ -28,10 +28,10 @@ module.exports = async({
   log("Veryify with:  \n npx hardhat verify --network "+networkName+" "+momentSVG.address)
 
   if (chainId==31337) {
-    // let tx = await momentSVG.create(-24,0, { value: ethers.utils.parseEther("0.0001") })
-    // let receipt = await tx.wait(1)
-    // log("NFT Minted")
-    // log("View tokenURI: "+ await momentSVG.tokenURI(0))
-    // log("View Set UCT Offset: "+ await momentSVG.getTimeZone(0))
+    let tx = await momentSVG.create(-24,0, { value: ethers.utils.parseEther("10") })
+    let receipt = await tx.wait(1)
+    log("NFT Minted")
+    log("View tokenURI: "+ await momentSVG.tokenURI(0))
+    log("View Set UCT Offset: "+ await momentSVG.getTimeZone(0))
   }
 }

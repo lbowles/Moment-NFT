@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract momentNFT is ERC721 {
 
-  uint256 public immutable claimPrice = 0.0001 ether; 
+  uint256 public immutable claimPrice = 10 ether; 
   address public immutable withdrawAddress = 0x245E32DbA4E30b483F618A3940309236AaEbBbC5 ;
   uint public tokenCounter; 
   uint32 constant SECONDS_PER_DAY = 24 * 60 * 60;
@@ -23,7 +23,7 @@ contract momentNFT is ERC721 {
 
   event CreatedMomentNFT(uint256 indexed tokenId);
 
-  constructor() ERC721 ("Moment NFT", "momentNFT") {
+  constructor() ERC721 ("MomentNFT", "momentNFT") {
     tokenCounter = 0 ;
    }
 
@@ -64,6 +64,10 @@ contract momentNFT is ERC721 {
     return (timeZoneHour[_id] ,  timeZoneMin[_id]) ;
   }
 
+  function abs(int a) internal pure returns (uint){
+        return a >= 0 ? uint(a) : uint(0-a);
+    }
+
   function tokenURI(uint256 _id) public view override returns (string memory) {
     int hr = int(getHour(block.timestamp)) + timeZoneHour[_id] + (timeZoneMin[_id] /60) ; 
     if (hr<0) {
@@ -75,9 +79,19 @@ contract momentNFT is ERC721 {
     int minPosition = (min * 360) / 60 + (sec * (360 / 60)) / 60;
     string memory sHrPosition = Strings.toString(uint(hrPosition)) ; 
     string memory sMinPosition = Strings.toString(uint(minPosition)) ; 
+
+    string memory sTokenId = Strings.toString(_id) ;  
+    string memory sTimeZoneHour = Strings.toString(uint(abs(timeZoneHour[_id]))) ; 
+    string memory sTimeZoneHourSign ;
+    if (timeZoneHour[_id]>0) {
+      sTimeZoneHourSign = "+"; 
+    } else {
+      sTimeZoneHourSign = "-"; 
+    }
+
     string memory svgMid = string(abi.encodePacked(' <g id="minute" transform = "rotate(',sMinPosition,'  )">      <path class="minute-arm" d="M200 200V78" />      <circle class="sizing-box" cx="200" cy="200" r="130" />    </g>    <g id="hour" transform = "rotate(',sHrPosition,'  )">      <path class="hour-arm" d="M200 200V140" />      <circle class="sizing-box" cx="200" cy="200" r="130" />    </g>  '));
     string memory svg = string(abi.encodePacked(svgTop, svgMid, svgBot )) ; 
-    string memory json = base64(bytes(abi.encodePacked('{"name": "Moment NFT", "description": "Fully on-chain clock NFT that shows you the current time.", "image": "data:image/svg+xml;base64,',base64(bytes(svg)) ,'"}')));
+    string memory json = base64(bytes(abi.encodePacked('{"name": "MomentNFT ',sTokenId,'", "description": "Fully on-chain clock NFT that shows you the current time. Time zone set to ',sTimeZoneHourSign,sTimeZoneHour,' UCT", "image": "data:image/svg+xml;base64,',base64(bytes(svg)) ,'"}')));
     return string(abi.encodePacked('data:application/json;base64,', json));
   }
 

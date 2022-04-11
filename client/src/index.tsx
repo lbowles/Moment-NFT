@@ -12,10 +12,12 @@ import { HashRouter } from 'react-router-dom';
 
 // API key for Ethereum node
 const defaultRPC = process.env.REACT_APP_DEFAULT_RPC
-const infuraId = process.env.REACT_APP_INFURA_PROJECT_ID  
+const infuraId = process.env.REACT_APP_INFURA_PROJECT_ID   //TODO: check this
 
 const deployedChainId = parseInt(deployments.chainId)
-const defaultProvider = deployedChainId === 31337 ? new StaticJsonRpcProvider("http://127.0.0.1:8545/") : new StaticJsonRpcProvider(defaultRPC, deployments.name)
+console.log(deployments.name,defaultRPC)
+const defaultProvider = deployedChainId === 31337 ? new StaticJsonRpcProvider("http://127.0.0.1:8545/") : new StaticJsonRpcProvider(defaultRPC)
+// const defaultProvider = deployedChainId === 31337 ? new StaticJsonRpcProvider("http://127.0.0.1:8545/") : new StaticJsonRpcProvider(defaultRPC, deployments.name)
 console.log(defaultProvider)
 
 // Chains for connectors to support

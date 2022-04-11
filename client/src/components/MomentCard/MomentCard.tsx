@@ -8,10 +8,7 @@ import { MomentCardHeader } from "../MomentCardHeader/MomentCardHeader"
 import style from "./MomentCard.module.css"
 import { NFT } from "../NFT/NFT"
 
-//TODO: add the +min uct time
 //TODO: update share on twitter
-//TODO: show current timezone when editing 
-//TODO: scaling on mobile
 
 const {isAddress, getAddress} = ethers.utils
 var contractAddress
