@@ -6,45 +6,31 @@ interface ISection {
   body: ReactElement
 }
 
+//TODO: update polyscan link
+
 export const Copy = () => {
   const sections: ISection[] = [
     {
-      heading: "What are Synthetic Punks?",
-      body: <p><b>Synthetic CryptoPunks</b> is inspired by the historical collection of 
-      10,000 <a href="https://www.larvalabs.com/cryptopunks" target="_blank" rel="noopener noreferrer">CryptoPunks by Larva Labs</a> and <a href="https://www.lootproject.com/" target="_blank" rel="noopener noreferrer">Synthetic Loot</a> by <a href="https://twitter.com/dhof" target="_blank" rel="noopener noreferrer">dhof</a>. 
-      It generates a unique, fully on-chain CryptoPunk for each Ethereum address.
-      <br/><br/>They are free to view for any address, but can be claimed as an ERC-721 NFT for a price of 0.02 ether.</p>
+      heading: "What are Moment NFT's?",
+      body: <p><b>Moment NFT's</b> are a simple way of telling the time on-chain.</p>
     },
     {
       heading: "Features",
-      body: <p>Each Synthetic Punk
+      body: <p>Each Moment NFT
         <ul>
           <li>Is generated from assets stored <a href={`https://polyscan.com/address/${deployments.contracts.momentNFT.address}`}>fully on-chain</a></li>
-          <li>Is uniquely associated with an ethereum wallet address</li>
-          <li>Supports <a href="https://ens.domains/">Ethereum Name Service (ENS)</a> in its metadata</li>
+          <li>Displays the current time in your selected time zone when the metadata is refreshed</li>
         </ul>
       </p>
     },
     {
-      heading: "Why should I claim my Punk?",
-      body: <p>Claiming your Synthetic Punk lets you:
+      heading: "Why should I claim my Moment NFT?",
+      body: <p>Claiming your Moment NFT lets you:
         <ul>
-          <li><b>Show it off</b> in your NFT collection alongside your other collectibles</li>
-          <li><b>Trade</b> it on marketplaces such as OpenSea, Rarible, or Zora</li>
-          <li><b>Supports</b> us in making more projects like this!</li>
+          <li><b>Tell the time</b> on-chain in a decentralized manner.</li>
+          <li><b>Supports</b> me in making more projects like this!</li>
         </ul>
       </p>
-    }, 
-    {
-      heading: "Why can I claim random Punks?",
-      body: <p>When you click the random button, it generates a brand new ethereum wallet on the fly. Because you can prove you own the wallet associated with the punk, you can claim it and have it sent to your actual ethereum wallet.</p>
-    },
-    {
-      heading: "Why CryptoPunks?",
-      body: <p>We believe that it should be possible for everyone to participate in the digital collectibles space. 
-        CryptoPunks are the most recognizable and exclusive NFTs and the pixel art style of 
-        CryptoPunks also makes it viable to store the required assets on-chain. These attributes made CryptoPunks 
-        the obvious choice for this experiment.</p>
     }
   ]
 

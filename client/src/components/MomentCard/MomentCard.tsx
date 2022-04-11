@@ -61,8 +61,8 @@ export const MomentCard = () => {
       function delay(time:any) {
         return new Promise(resolve => setTimeout(resolve, time));
       }
-      delay(3000).then(async() => {
-        getTokenURI()
+      delay(1000).then(async() => {
+        isClaimed()
         getUCTOffset()
         setUpdateTimeZone(false)
       });
@@ -76,6 +76,7 @@ export const MomentCard = () => {
     if (isclaim === true) {
       getTokenURI()
     }
+    return isclaim
   }
 
   const getTokenURI = async () => {
@@ -109,12 +110,15 @@ export const MomentCard = () => {
   }
 
   const getUCTOffset= async ()=> {
+    if (await isClaimed()) {
     var tempZone =  parseInt(await momentNFT.getTimeZone(getTokenId()))
+    console.log("ssssss" + tempZone)
     await setCurrentTimeZone(tempZone)
     setUCTOffset(tempZone)
     console.log(tempZone)
     getTokenURI()
     return tempZone
+    }
   }
 
   const onUpdateTimeZone = async () => {
@@ -126,6 +130,7 @@ export const MomentCard = () => {
     }
   }
 
+  //TODO: update this
   const onTwitterShare = () => {
     const tweet = encodeURIComponent(`Check out my wa CryptoPunk! @stephancill @npm_luko`)
     const ctaURL = encodeURIComponent(`https://syntheticpunks.com/`)
