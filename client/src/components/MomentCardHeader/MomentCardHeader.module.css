@@ -10,7 +10,7 @@
 }
 
 .twitterButton:hover {
-  filter: drop-shadow(0px 0px 4px #00FFAA);
+  filter: drop-shadow(0px 0px 4px var(--primaryAccent));
 }
 
 .twitterButton img {

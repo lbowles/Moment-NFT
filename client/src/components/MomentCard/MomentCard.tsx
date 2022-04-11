@@ -58,7 +58,9 @@ export const MomentCard = () => {
         setCurrentTx(undefined)
       })
       console.log("tx done")
-      getUCTOffset()
+      let timeZonePicker = (document.getElementById("selectUpdateTimeZone")as HTMLTextAreaElement)
+      setCurrentTimeZone(timeZonePicker.value)
+      setUCTOffset(timeZonePicker.value)
       setUpdateTimeZone(false)
     }
   }, [currentTx]) 
@@ -141,8 +143,8 @@ export const MomentCard = () => {
     }, this);
 
   const UCTSelected = () => {
-    const timeZonePicker = (document.getElementById("selectTimeZone")as HTMLTextAreaElement)
-    console.log(timeZonePicker)
+    let timeZonePicker = (document.getElementById("selectTimeZone")as HTMLTextAreaElement)
+    setUCTOffset(timeZonePicker.value)
   }
   const toggleEditTimeZone = () => {
     getUCTOffset()
@@ -170,7 +172,9 @@ export const MomentCard = () => {
         <MomentCardHeader address={account?.address as any as string} onTwitterShare={onTwitterShare}/>
         {address && <div>
           {provider && (tokenClaimed) && <div style={{paddingBottom: "6px", marginTop: "20px"}}>
-            <img src={NFTimg} style={{width:"340px", marginBottom:"20px"}}></img>
+            <div>
+              <img src={NFTimg} style={{width:"100%", marginBottom:"20px"}}></img>
+            </div>
             <div style={{display:"flex"}}>
             <button className={style.editTimeZoneBtn} onClick={()=>{toggleEditTimeZone()}}>{editTimeZoneBtn}</button>
             <h3 style={{marginTop:"5px",textAlign:"right",width:"100%"}}>Current Time Zone : {currentTimeZone} UCT</h3>
