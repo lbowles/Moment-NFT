@@ -3,8 +3,6 @@ import deployments from "../../deployments.json"
 import style from "./ClaimButton.module.css"
 import opensea from "../../img/opensea.svg"
 
-//TODO: check opensea link works
-
 interface IClaimedButtonProps {
   address: string
   claimPrice?: BigNumber
@@ -18,7 +16,7 @@ export const ClaimButton = ({claimed, tokenId, txHash, claimPrice, onClaim}: ICl
   
   // if claimed, view on opensea
   if (claimed && tokenId) {
-    return <a href={`https://opensea.io/assets/${deployments.contracts.momentNFT.address}/${tokenId.toString()}`}
+    return <a href={`https://opensea.io/assets/matic/${deployments.contracts.momentNFT.address}/${tokenId.toString()}`}
     target="_blank" rel="noreferrer"><button className={style.claimButton}>View on marketplace <img style={{height: "20px", marginLeft: "10px"}} src={opensea} alt=""/></button></a> 
   }
 

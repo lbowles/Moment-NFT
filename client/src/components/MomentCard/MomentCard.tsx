@@ -9,6 +9,7 @@ import style from "./MomentCard.module.css"
 import { NFT } from "../NFT/NFT"
 
 //TODO: update share on twitter
+//TODO: reload page when updating timezone
 
 const {isAddress, getAddress} = ethers.utils
 var contractAddress
@@ -51,14 +52,14 @@ export const MomentCard = () => {
   useEffect(() => {
     if (currentTx) {
       console.log("new tx", currentTx.hash)
-      currentTx.wait().then(() => {
+      currentTx.wait().then(() => { 
         setCurrentTx(undefined)
       })
     } else {
       function delay(time:any) {
         return new Promise(resolve => setTimeout(resolve, time));
       }
-      delay(1000).then(async() => {
+      delay(3000).then(async() => {
         isClaimed()
         getUCTOffset()
         setUpdateTimeZone(false)
@@ -99,7 +100,6 @@ export const MomentCard = () => {
 
   const onClaim = async () => {
     try { 
-      //const ctx = await momentNFT.create(UCTOffset,0,{value: claimPrice}).then(({data: tx}) => setCurrentTx(tx))
       setCurrentTx(await momentNFT.create(UCTOffset,+0,{value: claimPrice}))
     } catch (error) {
       console.log(error)
@@ -129,16 +129,16 @@ export const MomentCard = () => {
 
   //TODO: update this
   const onTwitterShare = () => {
-    const tweet = encodeURIComponent(`Check out my wa CryptoPunk! @stephancill @npm_luko`)
-    const ctaURL = encodeURIComponent(`https://syntheticpunks.com/`)
-    const related = encodeURIComponent(`stephancill,npm_luko,larvalabs,lootproject`)
+    const tweet = encodeURIComponent(`Check out Moment NFT! It's a new way of telling time on-chain`)
+    const ctaURL = encodeURIComponent(`https://momentNFT.luko.co.za/`)
+    const related = encodeURIComponent(`npm_luko`)
     const intentBaseURL = `https://twitter.com/intent/tweet`
     const intentURL = `${intentBaseURL}?text=${tweet}&url=${ctaURL}&related=${related}`
     window.open(intentURL, "_blank")
   }
 
   const countries = [
-    {name: 'UCT-11', value: -11},{name: 'UCT-10', value: -10},{name: 'UCT-9', value: -9},{name: 'UCT-8', value: -8},{name: 'UCT-7', value: -7},{name: 'UCT-6', value: -6},{name: 'UCT-5', value: -5},{name: 'UCT-4', value: -4},{name: 'UCT-3', value: -3},{name: 'UCT-2', value: -2},{name: 'UCT-1', value: -1},{name: 'UCT+0', value: 0},{name: 'UCT+1', value: 1},{name: 'UCT+2', value: 2},{name: 'UCT+3', value: 3},{name: 'UCT+4', value: 4},{name: 'UCT+5', value: 5},{name: 'UCT+6', value: 6},{name: 'UCT+7', value: 7},{name: 'UCT+8', value: 8},{name: 'UCT+9', value: 9},{name: 'UCT+10', value: 10},{name: 'UCT+11', value: 11}
+    {name: 'UTC-11', value: -11},{name: 'UTC-10', value: -10},{name: 'UTC-9', value: -9},{name: 'UTC-8', value: -8},{name: 'UTC-7', value: -7},{name: 'UTC-6', value: -6},{name: 'UTC-5', value: -5},{name: 'UTC-4', value: -4},{name: 'UTC-3', value: -3},{name: 'UTC-2', value: -2},{name: 'UTC-1', value: -1},{name: 'UTC+0', value: 0},{name: 'UTC+1', value: 1},{name: 'UTC+2', value: 2},{name: 'UTC+3', value: 3},{name: 'UTC+4', value: 4},{name: 'UTC+5', value: 5},{name: 'UTC+6', value: 6},{name: 'UTC+7', value: 7},{name: 'UTC+8', value: 8},{name: 'UTC+9', value: 9},{name: 'UTC+10', value: 10},{name: 'UTC+11', value: 11}
   ]
 
   let countriesList = countries.length > 0
@@ -183,7 +183,7 @@ export const MomentCard = () => {
             </div>
             <div style={{display:"flex"}}>
             <button className={style.editTimeZoneBtn} onClick={()=>{toggleEditTimeZone()}}>{editTimeZoneBtn}</button>
-            <h3 style={{marginTop:"5px",textAlign:"right",width:"100%"}}>Current Time Zone : {currentTimeZone} UCT</h3>
+            <h3 style={{marginTop:"5px",textAlign:"right",width:"100%"}}>Current Time Zone : UTC {currentTimeZone} </h3>
             </div>
             {editTimeZone && <>
               <select className={style.selectTimeZone} id="selectUpdateTimeZone" value={UCTOffset} onChange={()=>{toggleUpdateTimeZoneBtn()}}>

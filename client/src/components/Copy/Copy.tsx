@@ -6,7 +6,6 @@ interface ISection {
   body: ReactElement
 }
 
-//TODO: update polyscan link
 
 export const Copy = () => {
   const sections: ISection[] = [
