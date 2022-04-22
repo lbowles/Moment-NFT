@@ -3,7 +3,6 @@ import deployments from "../../deployments.json"
 import style from "./UpdateTimeZoneButton.module.css"
 import opensea from "../../img/opensea.svg"
 
-//TODO: check opensea link works
 
 interface IUpdateTimeZoneProps {
   txHash?: string

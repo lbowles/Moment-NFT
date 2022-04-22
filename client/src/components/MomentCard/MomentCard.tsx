@@ -8,8 +8,6 @@ import { MomentCardHeader } from "../MomentCardHeader/MomentCardHeader"
 import style from "./MomentCard.module.css"
 import { NFT } from "../NFT/NFT"
 
-//TODO: update share on twitter
-//TODO: reload page when updating timezone
 
 const {isAddress, getAddress} = ethers.utils
 var contractAddress
