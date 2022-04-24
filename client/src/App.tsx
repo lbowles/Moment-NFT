@@ -11,7 +11,6 @@ import etherscan from "./img/etherscan.svg"
 
 const deploymentChain = parseInt(deployments.chainId)
 
-
 function App() {
   const [{data: account}] = useAccount()
   const [{data: network}, switchNetwork] = useNetwork()
@@ -22,7 +21,7 @@ function App() {
     <div className="App">
       <MomentHeader></MomentHeader>
       <div className="linksContainer" style={{display: "flex"}}>
-        <a href="https://opensea.io/collection/momentnft" target="_blank" rel="noopener noreferrer"><img src={opensea} alt="OpenSea"/></a>
+        <a href="https://opensea.io/collection/moment-nft-1" target="_blank" rel="noopener noreferrer"><img src={opensea} alt="OpenSea"/></a>
         <a href="https://github.com/lbowles/Moment-NFT" target="_blank" rel="noopener noreferrer"><img src={github} alt="GitHub"/></a>
         <a href={`https://polygonscan.com/address/${deployments.contracts.momentNFT.address}`} target="_blank" rel="noopener noreferrer"><img src={etherscan} alt="Polyscan"/></a>
       </div>

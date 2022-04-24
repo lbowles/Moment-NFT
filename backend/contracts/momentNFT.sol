@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract momentNFT is ERC721 {
 
-  uint256 public immutable claimPrice = 10 ether; 
+  uint256 public immutable claimPrice = 1 ether; 
   address public immutable withdrawAddress = 0x245E32DbA4E30b483F618A3940309236AaEbBbC5 ;
   uint public tokenCounter; 
   uint32 constant SECONDS_PER_DAY = 24 * 60 * 60;
@@ -16,14 +16,13 @@ contract momentNFT is ERC721 {
   string constant svgBot ='<circle cx="200" cy="200" r="5" fill="white" />    <defs>      <filter id="filter0_f_7_61" x="-135" y="-100" width="435" height="435" filterUnits="userSpaceOnUse"        color-interpolation-filters="sRGB">        <feFlood flood-opacity="0" result="BackgroundImageFix" />        <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />        <feGaussianBlur stdDeviation="50" result="effect1_foregroundBlur_7_61" />      </filter>      <filter id="filter1_f_7_61" x="132" y="22" width="435" height="435" filterUnits="userSpaceOnUse"        color-interpolation-filters="sRGB">        <feFlood flood-opacity="0" result="BackgroundImageFix" />        <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />        <feGaussianBlur stdDeviation="50" result="effect1_foregroundBlur_7_61" />      </filter>      <filter id="filter2_f_7_61" x="-104" y="128" width="435" height="435" filterUnits="userSpaceOnUse"        color-interpolation-filters="sRGB">        <feFlood flood-opacity="0" result="BackgroundImageFix" />        <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />        <feGaussianBlur stdDeviation="50" result="effect1_foregroundBlur_7_61" />      </filter>      <linearGradient id="paint0_linear_7_61" x1="207" y1="41" x2="207" y2="357" gradientUnits="userSpaceOnUse">        <stop stop-color="#FF84CE" />        <stop offset="1" stop-color="#923DFF" />      </linearGradient>    </defs>  </svg>'; 
   
   mapping(address => bool) public claimed;
-  mapping(address => uint256) public userNFTTokenId;
-  mapping(uint256 => address) public ownerOfNFTId;
   mapping (uint256 => int8) public timeZoneHour; 
-  mapping (uint256 => int8) public timeZoneMin; 
+  mapping (uint256 => int8) public timeZoneMin;
+  mapping (address => uint256) public TokenIDOfAddress;
 
   event CreatedMomentNFT(uint256 indexed tokenId);
 
-  constructor() ERC721 ("MomentNFT", "momentNFT") {
+  constructor() ERC721 ("Moment-NFT", "Moment-NFT") {
     tokenCounter = 0 ;
    }
 
@@ -33,8 +32,7 @@ contract momentNFT is ERC721 {
     _safeMint(msg.sender, tokenCounter);
     setTimeZone(_timeZoneHour,_timeZoneMin,tokenCounter) ; 
     claimed[msg.sender] = true;
-    userNFTTokenId[msg.sender] = tokenCounter ; 
-    ownerOfNFTId[tokenCounter] = msg.sender ; 
+    TokenIDOfAddress[msg.sender] = tokenCounter;
     emit CreatedMomentNFT(tokenCounter);
     tokenCounter = tokenCounter + 1 ; 
     uint256 refund = msg.value - claimPrice;
@@ -45,14 +43,6 @@ contract momentNFT is ERC721 {
 
   function withdraw() public {
     payable(withdrawAddress).transfer(address(this).balance);
-  }
-
-  function getUserNFTTokenId(address _userAddress) public view returns (uint256 tokenId){
-    return userNFTTokenId[_userAddress];
-  }
-
-  function getOwnerOfNFTId(uint256 _id) public view returns (address owner){
-    return ownerOfNFTId[_id];
   }
 
   function setTimeZone(int8 _timeZoneHour,int8 _timeZoneMin, uint _id) public{
@@ -108,6 +98,14 @@ contract momentNFT is ERC721 {
   function getSecond(uint timestamp) internal pure returns (uint second) {
         second = timestamp % SECONDS_PER_MINUTE;
     }
+
+  function safeTransferFrom(address _from, address _to, uint256 _tokenId)  public override{
+    require(1==2);
+  }
+  function transferFrom(address _from, address _to, uint256 _tokenId) public override{
+    require(1==2);
+  }
+
 
   function base64(bytes memory data) internal pure returns (string memory) {
     bytes memory TABLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

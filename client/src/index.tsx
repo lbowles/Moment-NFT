@@ -10,11 +10,9 @@ import deployments from "./deployments.json"
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { HashRouter } from 'react-router-dom';
 
-//TODO: test transfering on testnet
-
 // API key for Ethereum node
 const defaultRPC = process.env.REACT_APP_DEFAULT_RPC
-const infuraId = process.env.REACT_APP_INFURA_PROJECT_ID   //TODO: check this
+const infuraId = process.env.REACT_APP_INFURA_PROJECT_ID 
 
 const deployedChainId = parseInt(deployments.chainId)
 console.log(deployments.name,defaultRPC)

@@ -66,7 +66,6 @@ export const MomentCard = () => {
   }, [currentTx]) 
 
   const isClaimed = async () => {
-    console.log(account?.address)
     var isclaim = await momentNFT.claimed(account?.address)
     setTokenClaimed(isclaim)
     if (isclaim === true) {
@@ -76,17 +75,14 @@ export const MomentCard = () => {
   }
 
   const getTokenURI = async () => {
-    console.log("get token uri")
     const tokenId = await getTokenId()
     var tokenURI = await momentNFT.tokenURI(tokenId)
     tokenURI = window.atob(tokenURI.split(",")[1])
-    console.log(JSON.parse(tokenURI).image)
     setNFTimg(JSON.parse(tokenURI).image)
    }
 
   const getTokenId = async () => {
-    console.log("VIEW Token Id")
-    const tempId = await momentNFT.getUserNFTTokenId(account?.address)
+    const tempId = await momentNFT.TokenIDOfAddress(account?.address)
     setTokenId(tempId.toString())
     return parseInt(tempId.toString())
   }
@@ -107,17 +103,14 @@ export const MomentCard = () => {
   const getUCTOffset= async ()=> {
     if (await isClaimed()) {
     var tempZone =  parseInt(await momentNFT.getTimeZone(getTokenId()))
-    console.log("ssssss" + tempZone)
     await setCurrentTimeZone(tempZone)
     setUCTOffset(tempZone)
-    console.log(tempZone)
     getTokenURI()
     return tempZone
     }
   }
 
   const onUpdateTimeZone = async () => {
-    console.log("Update Time Zone")
     try { 
       setCurrentTx(await momentNFT.setTimeZone(UCTOffset,+0,getTokenId()))
     } catch (error) {
